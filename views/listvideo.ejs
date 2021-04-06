@@ -1,0 +1,45 @@
+<%- include('header')%>
+<div class="main" style="padding:0">
+    <div class="sub-header">List file Videos</div>
+    <div class="display">
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group me-2" role="group" aria-label="First group">
+              <button type="button" class="btn btn-primary" disabled>First</button>
+              <button type="button" class="btn btn-primary">1</button>
+              <button type="button" class="btn btn-primary">2</button>
+              <button type="button" class="btn btn-primary">3</button>
+            </div>
+            <div id ="iii" >...</div>
+            <div class="btn-group" role="group" aria-label="Third group">
+              <button type="button" class="btn btn-info">Last</button>
+            </div>
+        </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col-1">STT</th>
+                <th scope="col-6">File</th>
+                <th scope="col-2">Status</th>
+                <th scope="col-3">Control</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for = "item in fileBase" >
+                <th scope="row">{{item.STT}}</th>
+                <td>{{item.file}}</td>
+                <td>{{item.status}}</td>
+                <td>
+                  <button class="btn btn-success btn-sm" @click = "_getLink(item.STT)" >Get Link</button>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
+                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="js/menu.js"></script>
+<link rel="stylesheet" href="css/menu.css">
+</html>
