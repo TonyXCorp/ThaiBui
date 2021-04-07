@@ -25,7 +25,10 @@ wait.until(EC.presence_of_element_located((By.XPATH, """//input[@name='username'
 driver.find_element_by_name("password").send_keys(password)
 #tonyparker2003
 driver.find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
-wait.until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
+try:
+    wait.until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
+except:
+    pass
 driver.get("https://www.instagram.com/tv/upload")
 upload_input = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "YeWti")))
 upload_input.send_keys(video_url)

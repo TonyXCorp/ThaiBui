@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const db = require('./database')
 
 
 const app = express()
@@ -49,15 +50,19 @@ passport.deserializeUser((admin, done) => {
 app.get("/execute", (req, res) => {
     var process = child('python', ["./script.py", "./video.mp4", "an8amc1234:tonyparker2003", "title", "des"])
     process.stdout.on('data', (data) => {
-        reg = /Done/.exec(data)
-        if (reg != null) {
-            res.send(reg[0])
-        }
+        console.log(data)
     })
 })
 
 app.get("/", (req, res) => {
     if (req.isAuthenticated()) {
+        db.count((videos, accounts)=>{
+            //Hiện lên màn hình thông tin về số lượng acc, video
+            console.log("Number of accounts: " + accounts)
+            console.log("Number of videos: " + videos)
+            //videos là số lượng video
+            //accounts là số lượng account
+        })
         res.render('index')
     }
     else {
@@ -66,6 +71,10 @@ app.get("/", (req, res) => {
 })
 app.get("/video-list", (req, res) => {
     if (req.isAuthenticated()) {
+        db.getVideos(data=>{
+            console.log(data)
+            //Data cho list video
+        })
         res.render('listvideo')
     }
     else {
@@ -80,8 +89,16 @@ app.get("/video-search", (req, res) => {
         res.render("login", {error: "Please login first"})
     }
 })
+app.post("/video-search", (req, res) => {
+
+})
+
 app.get("/account-list", (req, res) => {
     if (req.isAuthenticated()) {
+        db.getAccounts(data=>{
+            console.log(data);
+            //Data cho list account
+        })
         res.render('listaccount')
     }
     else {
@@ -114,15 +131,14 @@ app.get("/upload-video", (req, res) => {
 })
 app.post("/login", passport.authenticate('local', { //chọn phương thức check là local => npm install passport-local
     failureRedirect: '/loginFail',  //nếu check không đúng thì redirect về link này
-    successRedirect: '/loginOK'
+    successRedirect: '/'
 }))
 
-app.get("/loginOK", (req, res) => {
-    res.render('index')
-})
 app.get("/loginFail", (req, res) => {
     res.render("login", {
         error: "Wrong password, please try again !"
     })
 })
+
+
 app.listen(1212)
