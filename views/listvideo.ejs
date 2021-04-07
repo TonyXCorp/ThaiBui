@@ -17,7 +17,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col-1">STT</th>
+                <th scope="col-1">ID</th>
                 <th scope="col-6">1</th>
                 <th scope="col-2">2</th>
                 <th scope="col-3">3</th>
@@ -25,7 +25,7 @@
             </thead>
             <tbody>
               <tr v-for = "item in fileBase" >
-                <th scope="row">{{item.insta_id}}</th>
+                <th scope="row">{{item.id}}</th>
                 <td><a :href="item.drive_url">{{item.drive_url}}</a></td>
                 <td>{{item.status}}</td>
                 <td>
