@@ -15,11 +15,11 @@ body{
 }
 a {
     text-decoration: none;
-    color: white;
+    color: red;
 }
 a:hover{
     text-decoration:none;
-    color:white;
+    color: red;
 }
 .card{
     position: absolute;
@@ -164,9 +164,18 @@ a:hover{
 }
 .search-bar{
     background-color: #515B65;
+    color:#fff;
     border: 1px solid #23282C;
 }
 .search-bar:focus{
     background-color: #515B65;
     border: 1px solid #23282C;
+    color:#fff;
+}
+.form-control {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+label {
+    color: #fff;
 }

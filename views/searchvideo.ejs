@@ -1,15 +1,33 @@
 <%- include('header')%>
-<div class="main" style="padding:0">
+<div class="main" style="padding:0" id="searchVideo">
     <div class="sub-header">Seach video in list uploaded</div>
     <div class="display" style="padding:10px">
-        <form action="/search" method="post">
-            <div class="input-group form-group">
-                <input type="text" class="form-control search-bar" placeholder="Search..." name="search">
-                <input type="submit" value="Search" class="btn btn login_btn">
-            </div>
-        </form>
+        <input type="text" class="form-control search-bar" placeholder="Search..." name="search" v-model="items" style="color:#fff">        
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col-1">STT</th>
+                <th scope="col-6">1</th>
+                <th scope="col-2">2</th>
+                <th scope="col-3">3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for = "item in fileBase" v-if="item.drive_url.indexOf(items)>=0">
+                <th scope="row">{{item.insta_id}}</th>
+                <td>{{item.drive_url}}</td>
+                <td>{{item.status}}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
+                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
     </div>
 </div>
 </body>
-
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="js/searchVideo.js"></script>
+<link rel="stylesheet" href="css/listVideo.css">
 </html>

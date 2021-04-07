@@ -6,7 +6,6 @@ const localStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const db = require('./database')
 
-
 const app = express()
 var server = require("http").Server(app);
 app.set("view engine", "ejs")
@@ -16,6 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: 'something' }));
 app.use(passport.initialize());
 app.use(passport.session());
+const io = require('socket.io')(server)
 
 
 
@@ -65,13 +65,6 @@ app.get("/execute", (req, res) => {
 
 app.get("/", (req, res) => {
     if (req.isAuthenticated()) {
-        db.count((videos, accounts)=>{
-            //Hiện lên màn hình thông tin về số lượng acc, video
-            console.log("Number of accounts: " + accounts)
-            console.log("Number of videos: " + videos)
-            //videos là số lượng video
-            //accounts là số lượng account
-        })
         res.render('index')
     }
     else {
@@ -80,10 +73,6 @@ app.get("/", (req, res) => {
 })
 app.get("/video-list", (req, res) => {
     if (req.isAuthenticated()) {
-        db.getVideos(data=>{
-            console.log(data)
-            //Data cho list video
-        })
         res.render('listvideo')
     }
     else {
@@ -101,10 +90,6 @@ app.get("/video-search", (req, res) => {
 
 app.get("/account-list", (req, res) => {
     if (req.isAuthenticated()) {
-        db.getAccounts(data=>{
-            console.log(data);
-            //Data cho list account
-        })
         res.render('listaccount')
     }
     else {
@@ -151,6 +136,7 @@ app.get("/loginFail", (req, res) => {
 })
 
 io.on("connection", (socket)=>{
+    console.log('co nguoi connected')
     socket.on('video_list', (data)=>{
         db.getVideos(data=>{
             io.emit("video_list", data)
@@ -159,11 +145,6 @@ io.on("connection", (socket)=>{
     socket.on('account_list', (data)=>{
         db.getAccounts(data=>{
             io.emit("account_list",data)
-        })
-    })
-    socket.on('video-search', (data)=>{
-        db.search(data, (result)=>{
-            io.emit("search", result)
         })
     })
 })

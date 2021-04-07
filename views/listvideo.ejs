@@ -1,5 +1,5 @@
 <%- include('header')%>
-<div class="main" style="padding:0">
+<div class="main" style="padding:0" id="listVideo">
     <div class="sub-header">List file Videos</div>
     <div class="display">
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
@@ -18,15 +18,15 @@
             <thead>
               <tr>
                 <th scope="col-1">STT</th>
-                <th scope="col-6">File</th>
-                <th scope="col-2">Status</th>
-                <th scope="col-3">Control</th>
+                <th scope="col-6">1</th>
+                <th scope="col-2">2</th>
+                <th scope="col-3">3</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for = "item in fileBase" >
-                <th scope="row">{{item.STT}}</th>
-                <td>{{item.file}}</td>
+                <th scope="row">{{item.insta_id}}</th>
+                <td>{{item.drive_url}}</td>
                 <td>{{item.status}}</td>
                 <td>
                   <button class="btn btn-success btn-sm" @click = "_getLink(item.STT)" >Get Link</button>
@@ -40,6 +40,6 @@
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-<script src="js/menu.js"></script>
-<link rel="stylesheet" href="css/menu.css">
+<script src="js/listVideo.js"></script>
+<link rel="stylesheet" href="css/listVideo.css">
 </html>

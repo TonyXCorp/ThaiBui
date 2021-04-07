@@ -1,7 +1,34 @@
 <%- include('header')%>
-<div class="main" style="padding:0">
+<div class="main" style="padding:0" id="listAccount">
     <div class="sub-header">List Instagram account </div>
     <div class="display"></div>
+<table class="table">
+            <thead>
+              <tr>
+                <th scope="col-1">STT</th>
+                <th scope="col-3">1</th>
+                <th scope="col-3">2</th>
+                <th scope="col-2">3</th>
+                <th scope="col-3">4</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for = "item in fileBase">
+                <th scope="row">{{item.id}}</th>
+                <td>{{item.username}}</td>
+                <td>{{item.password}}</td>
+                <td>{{item.status}}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
+                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="js/listAccount.js"></script>
+<link rel="stylesheet" href="css/listVideo.css">
 </html>
