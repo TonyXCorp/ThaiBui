@@ -15,11 +15,11 @@ body{
 }
 a {
     text-decoration: none;
-    color: red;
+    color: #fff;
 }
 a:hover{
     text-decoration:none;
-    color: red;
+    color: #fff;
 }
 .card{
     position: absolute;
