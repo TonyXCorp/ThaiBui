@@ -8,6 +8,7 @@ const db = require('./database')
 
 
 const app = express()
+var server = require("http").Server(app);
 app.set("view engine", "ejs")
 app.set("views", "./views")
 app.use(express.static("public"))
@@ -48,9 +49,17 @@ passport.deserializeUser((admin, done) => {
 })
 
 app.get("/execute", (req, res) => {
-    var process = child('python', ["./script.py", "./video.mp4", "an8amc1234:tonyparker2003", "title", "des"])
+    abs_link = "./video.mp4"
+    username = "an8amc1234"
+    password = "tonyparker2003"
+    title = "title"
+    drive_url = "google.com"
+    description = "description"
+    var process = child('python', ["./script.py", abs_link, username + ":"+ password, title, description])
     process.stdout.on('data', (data) => {
-        console.log(data)
+        if(data.toString() = "Done"){
+            db.addVideo(drive_url, title, description, )
+        }
     })
 })
 
@@ -89,9 +98,6 @@ app.get("/video-search", (req, res) => {
         res.render("login", {error: "Please login first"})
     }
 })
-app.post("/video-search", (req, res) => {
-
-})
 
 app.get("/account-list", (req, res) => {
     if (req.isAuthenticated()) {
@@ -113,6 +119,10 @@ app.get("/account-add", (req, res) => {
         res.render("login", {error: "Please login first"})
     }
 })
+app.post("/account-add", (req, res)=>{
+
+})
+
 app.get("/add-link", (req, res) => {
     if (req.isAuthenticated()) {
         res.render('addlink')
@@ -140,5 +150,22 @@ app.get("/loginFail", (req, res) => {
     })
 })
 
+io.on("connection", (socket)=>{
+    socket.on('video_list', (data)=>{
+        db.getVideos(data=>{
+            io.emit("video_list", data)
+        })
+    })
+    socket.on('account_list', (data)=>{
+        db.getAccounts(data=>{
+            io.emit("account_list",data)
+        })
+    })
+    socket.on('video-search', (data)=>{
+        db.search(data, (result)=>{
+            io.emit("search", result)
+        })
+    })
+})
 
-app.listen(1212)
+server.listen(1212)

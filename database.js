@@ -65,10 +65,44 @@ function search(input, callback){
         {status: input}
       ]
     }
+  }).then(data=>{
+    callback(data)
+  })
+}
+
+function addAccount(input){
+  username = input.split(":")[0]
+  password = input.split(":")[1]
+  insta_acccount.create({
+    username: username,
+    password: password,
+    status: "LIVE"
+  }).then(row=>{
+    console.log(row)
+  }).catch(err=>{
+    console.log(err)
+  })
+}
+
+function addVideo(drive_url, title, description, insta_id, insta_url){
+  videos.create({
+    drive_url: drive_url,
+    title: title,
+    description: description,
+    insta_id: insta_id,
+    insta_url: insta_url,
+    status: "Complete"
+  }).then(row=>{
+    console.log(row)
+  }).catch(err=>{
+    console.log(err)
   })
 }
 module.exports = {
   count: count,
   getVideos: getVideos,
-  getAccounts: getAccounts
+  getAccounts: getAccounts,
+  search: search,
+  addAccount: addAccount,
+  addVideo: addVideo,
 }
