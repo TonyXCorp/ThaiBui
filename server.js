@@ -98,7 +98,7 @@ app.get("/account-list", (req, res) => {
 })
 app.get("/account-add", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('addaccount')
+        res.render('addaccount',{error : ""})
     }
     else {
         res.render("login", {error: "Please login first"})
@@ -109,12 +109,12 @@ app.post("/account-add", (req, res)=>{
     password = req.body.input_pass
     input = username + ":" + password
     db.addAccount(input)
-    res.render('addaccount')
+    res.render('addaccount', {error : "Success"})
 })
 
 app.get("/add-link", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('addlink')
+        res.render('addlink',{error : ""})
     }
     else {
         res.render("login", {error: "Please login first"})
@@ -122,7 +122,7 @@ app.get("/add-link", (req, res) => {
 })
 app.get("/upload-video", (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('uploadvideo')
+        res.render('uploadvideo',{error : ""})
     }
     else {
         res.render("login", {error: "Please login first"})

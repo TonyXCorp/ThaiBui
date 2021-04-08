@@ -184,3 +184,6 @@ a:hover{
 label {
     color: #fff;
 }
+.success-msg {
+    color: green;
+}
