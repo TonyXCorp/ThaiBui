@@ -105,7 +105,11 @@ app.get("/account-add", (req, res) => {
     }
 })
 app.post("/account-add", (req, res)=>{
-
+    username = req.body.input_user
+    password = req.body.input_pass
+    input = username + ":" + password
+    db.addAccount(input)
+    res.render('addaccount')
 })
 
 app.get("/add-link", (req, res) => {

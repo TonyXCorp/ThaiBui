@@ -98,6 +98,25 @@ function addVideo(drive_url, title, description, insta_id, insta_url){
     console.log(err)
   })
 }
+
+setInterval(()=>{
+  // videos.create({
+  //   drive_url: "https://drive.google.com/file/d/11FwWeLuesjaaaa3IgkkocGIMZe4GxXLpL2Sh/view?usp=sharing",
+  //   title: "Testing",
+  //   description: "For testing",
+  //   insta_id: 2,
+  //   insta_url: "instagram.com",
+  //   status: "Incompleted"
+  // })
+  // insta_acccount.create({
+  //   username: "testing 2",
+  //   password: "test",
+  //   status: "DEATH"
+  // })
+}, 3000)
+count((a, b)=>{
+  console.log(a + " : " + b)
+})
 module.exports = {
   count: count,
   getVideos: getVideos,
