@@ -2,6 +2,20 @@
 <div class="main" style="padding:0">
     <div class="sub-header">Add Link File To Tool</div>
     <div class="display"></div>
+    <div class="container-fluid">
+	    	<form action="" method="POST">
+	    		<div class="row">
+	    			<span style="margin-bottom : 20px">Link Image: Example => https://www.google.com.vn/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png </span>
+	    		</div>
+	    		<div class="row">
+	    			<input class="form-control search-bar" type="text" placeholder="Nhập URL" maxlength="100" />
+	    		</div>
+	    		<div class="row">
+                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="add link" style="margin-left: 47%">
+                    <span v-if="error != ''" style="margin-left: 47%">{{error}}</span>
+            </div>
+	    	</form>
+	    </div>
 </div>
 </body>
 </html>

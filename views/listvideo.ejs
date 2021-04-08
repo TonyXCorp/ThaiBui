@@ -2,31 +2,44 @@
 <div class="main" style="padding:0" id="listVideo">
     <div class="sub-header">List file Videos</div>
     <div class="display">
-        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" v-if ="tongtab>4">
+            <div class="btn-group me-2" role="group" aria-label="First group">
+              <button type="button" class="btn btn-primary" v-if="viTri<=3" disabled>First</button>
+              <button type="button" class="btn btn-primary" v-if="viTri>3" @click="rt=1,viTri=3">First</button>
+              <div id ="iii"  v-if="viTri>3" >...</div>
+              <button v-for="n in 5" type="button" class="btn btn-primary" @click="_rt(n)">{{viTri-3+n}}</button>
+            </div>
+            <div id ="iii" v-if="viTri<tongtab-3"  >...</div>
+            <div class="btn-group" role="group" aria-label="Third group">
+              <button type="button" class="btn btn-info" @click="rt=tongtab,viTri=tongtab-2">Last</button>
+            </div>
+        </div>
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" v-if ="tongtab<4">
             <div class="btn-group me-2" role="group" aria-label="First group">
               <button type="button" class="btn btn-primary" disabled>First</button>
-              <button type="button" class="btn btn-primary">1</button>
-              <button type="button" class="btn btn-primary">2</button>
-              <button type="button" class="btn btn-primary">3</button>
+              <button v-for="n in tongtab" type="button" class="btn btn-primary" @click="rt=n">{{n}}</button>
             </div>
-            <div id ="iii" >...</div>
             <div class="btn-group" role="group" aria-label="Third group">
-              <button type="button" class="btn btn-info">Last</button>
+              <button type="button" class="btn btn-info" @click="rt=tongtab">Last</button>
             </div>
         </div>
           <table class="table">
             <thead>
               <tr>
                 <th scope="col-1">ID</th>
-                <th scope="col-6">1</th>
+                <th scope="col-3">1</th>
                 <th scope="col-2">2</th>
-                <th scope="col-3">3</th>
+                <th scope="col-2">3</th>
+                <th scope="col-1">4</th>
+                <th scope="col-3">5</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for = "item in fileBase" >
+              <tr v-for = "item in fileBase.slice((rt-1)*50,rt*50-1)" >
                 <th scope="row">{{item.id}}</th>
                 <td><a :href="item.drive_url">{{item.drive_url}}</a></td>
+                <td>{{item.description}}</td>
+                <td>{{item.title}}</td>
                 <td>{{item.status}}</td>
                 <td>
                   <button class="btn btn-success btn-sm" @click = "_getLink(item.STT)" >Get Link</button>

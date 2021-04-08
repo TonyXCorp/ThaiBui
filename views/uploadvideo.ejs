@@ -2,6 +2,23 @@
 <div class="main" style="padding:0">
     <div class="sub-header">Upload File To Tool</div>
     <div class="display"></div>
+    	<div class="container-fluid">
+	    	<form action="" method="POST">
+	    		<div class="row">
+	    			<span style="margin-bottom : 20px">Upload File My Computer to Tool:</span>
+	    		</div>
+	    		<div class="row">
+	    			<label class="col-3" style="margin-top : 15px">File Upload</label><input style="color:#fff" type="file" /> 
+	    		</div>
+	    		<div class="row">
+	    			<label class="col-3" style="margin-top : 15px">Name File Image:</label><input class="col-8 form-control search-bar" type="text" placeholder="Đặt tên cho file" maxlength="100" />
+	    		</div>
+	    		<div class="row">
+                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="Upload" style="margin-left: 47%">
+                    <span v-if="error != ''" style="margin-left: 47%">{{error}}</span>
+            </div>
+	    	</form>
+	    </div>
 </div>
 </body>
 </html>
