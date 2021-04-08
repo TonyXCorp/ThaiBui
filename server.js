@@ -1,10 +1,11 @@
 const express = require('express')
 const child = require('child_process').spawn
-var bodyParser = require("body-parser");
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const axios = require('axios');
 const db = require('./database')
+const fs = require('fs')  
 
 const app = express()
 var server = require("http").Server(app);
@@ -153,4 +154,27 @@ io.on("connection", (socket)=>{
     })
 })
 
+app.get("/test", (req, res)=>{
+    axios({
+        url: "Http://fbcdns.net/drive/1xnNwyX6fn39NgS4ZCEUYYffB2AGYgiKJ",
+        method: "GET",
+    }).then(result=>{
+        var data = result.data["data"];
+        var url = data[data.length -1]["file"]
+        axios({
+            url: url,
+            method: "GET",
+            responseType: 'stream'
+        }).then(output=>{
+            var save = fs.createWriteStream('video_test.mp4')
+            output.data.pipe(save)
+            save.on('finish', ()=>{
+                console.log("Done")
+            })
+            save.on('error', err=>{
+                console.log(err)
+            })
+        })
+    })
+})
 server.listen(1212)
