@@ -15,7 +15,7 @@ username = sys.argv[2].split(":")[0]
 password = sys.argv[2].split(":")[1]
 title = sys.argv[3]
 description = sys.argv[4]
-options = webdriver.ChromeOptions();
+options = webdriver.ChromeOptions()
 options.add_argument('--log-level 3') 
 driver = webdriver.Chrome(chrome_options=options)
 wait = WebDriverWait(driver, 10)
@@ -43,7 +43,18 @@ try:
     while (1!=2):
         if(driver.title != "Instagram"):
             break
-    print("Done")
+    flag = True
+    while (flag):
+        try:
+            driver.find_element_by_xpath("""//div[contains(@class, '_bz0w')]""")
+        except:
+            flag = False
+    try:
+        first_video = driver.find_element_by_class_name("_bz0w")
+        insta_link = first_video.get_attribute("href")
+        print(insta_link)
+    except:
+        print("Not found")
 except:
     print("Error")
-driver.quit()
+# driver.quit()
