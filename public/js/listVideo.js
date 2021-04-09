@@ -11,10 +11,12 @@ var app = new Vue({
 	created: function () {
   	},
 	methods:{
-		_getLink (a, b){
+		_getLink (a){
 			socket.emit("getLink", a)
 		},
-		_delete (a){console.log(a+'delete')},
+		_delete (a){
+			socket.emit("delCache", a)
+		},
 		_deleteCache (a){console.log(a+'deleteCache')},
 		_rt(n){
 			this.rt=this.viTri+n-3
@@ -31,3 +33,6 @@ socket.emit('video_list')
 	socket.on ('video_list',u=>{
 		console.log(u)
 		return this.app.fileBase=u,this.app.doDai=u.length,this.app.tongtab=Math.floor(u.length/50)+1})
+socket.on("alert", data=>{
+	alert(data)
+})

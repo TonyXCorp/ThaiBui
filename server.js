@@ -156,11 +156,24 @@ io.on("connection", (socket) => {
         db.video_search_by_id(data_in, (data) =>{
             db.account_search(data["insta_id"], (user, pass)=>{
                 account = user + ":" + pass
-                var process = child('python', ["./getlink.py", data_in, account])
-                process.on('data', (data)=>{
-                    console.log(data.toString())
+                console.log(data["insta_url"].replace("\r\n", ""));
+                console.log(account)
+                console.log("???")
+                var process = child('python', ["./getlink.py", data["insta_url"], account])
+                process.stdout.on('data', (link)=>{
+                    io.emit("alert", link.toString())
+                    db.add_cache(data["id"], link)
                 })
             })  
+        })
+    })
+    socket.on('delCache', (data_in)=>{
+        db.video_search_by_id(data_in, data=>{
+            db.update({
+                cache: ""
+            }, {
+                where: {id: data["id"]}
+            }).then((row)=>{console.log(row)}).catch(()=>{})
         })
     })
 })
