@@ -57,4 +57,4 @@ try:
         print("Not found")
 except:
     print("Error")
-# driver.quit()
+driver.quit()

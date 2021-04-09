@@ -11,7 +11,9 @@ var app = new Vue({
 	created: function () {
   	},
 	methods:{
-		_getLink (a){console.log(a+'getLink')},
+		_getLink (a, b){
+			socket.emit("getLink", a)
+		},
 		_delete (a){console.log(a+'delete')},
 		_deleteCache (a){console.log(a+'deleteCache')},
 		_rt(n){

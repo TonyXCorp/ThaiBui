@@ -26,25 +26,21 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col-1">ID</th>
-                <th scope="col-3">1</th>
-                <th scope="col-2">2</th>
-                <th scope="col-2">3</th>
-                <th scope="col-1">4</th>
-                <th scope="col-3">5</th>
+                <th scope="col-1">Video ID</th>
+                <th scope="col-3">Drive URL</th>
+                <th scope="col-1">Status</th>
+                <th scope="col-3">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for = "item in fileBase.slice((rt-1)*50,rt*50-1)" >
                 <th scope="row">{{item.id}}</th>
                 <td><a :href="item.drive_url">{{item.drive_url}}</a></td>
-                <td>{{item.description}}</td>
-                <td>{{item.title}}</td>
                 <td>{{item.status}}</td>
                 <td>
-                  <button class="btn btn-success btn-sm" @click = "_getLink(item.STT)" >Get Link</button>
-                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
-                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
+                  <button class="btn btn-success btn-sm" @click = "_getLink(item.id)" >Get Link</button>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete</button>
+                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.id)">Delete Cache</button>
                 </td>
               </tr>
             </tbody>

@@ -84,7 +84,7 @@ function addAccount(input){
   })
 }
 
-function addVideo(drive_url, title, description, insta_id, insta_url){
+function addVideo(drive_url, title, description, insta_id, insta_url, callback){
   videos.create({
     drive_url: drive_url,
     title: title,
@@ -94,29 +94,57 @@ function addVideo(drive_url, title, description, insta_id, insta_url){
     status: "Complete"
   }).then(row=>{
     console.log(row)
+    callback("Done")
   }).catch(err=>{
     console.log(err)
+    callback(null)
   })
 }
 
-setInterval(()=>{
-  // videos.create({
-  //   drive_url: "https://drive.google.com/file/d/11FwWeLuesjaaaa3IgkkocGIMZe4GxXLpL2Sh/view?usp=sharing",
-  //   title: "Testing",
-  //   description: "For testing",
-  //   insta_id: 2,
-  //   insta_url: "instagram.com",
-  //   status: "Incompleted"
-  // })
-  // insta_acccount.create({
-  //   username: "testing 2",
-  //   password: "test",
-  //   status: "DEATH"
-  // })
-}, 3000)
-count((a, b)=>{
-  console.log(a + " : " + b)
-})
+function updateVideo(url, title, description, insta_id, insta_url, callback) {
+  videos.update({
+    title: title,
+    description: description,
+    insta_id: insta_id,
+    insta_url: insta_url, 
+    status: "Completed"
+  }, {
+    where: {drive_url: url},
+  }).then(()=>{
+    callback("Done")
+  }).catch((err)=>{
+    callback(null)
+  })
+}
+function account_search(id, callback) {
+  insta_acccount.findOne({
+    where: {id: id},
+    raw: true
+  }).then(row=>{
+    callback(row["username"], row["password"])
+  })
+}
+function video_search(url, callback) {
+  videos.findOne({
+    where: {drive_url: url},
+    raw: true
+  }).then(row=>{
+    callback(row)
+  })
+}
+function video_search_by_id(id, callback) {
+  videos.findOne({
+    where: {id: id},
+    raw: true
+  }).then(row=>{
+    callback(row)
+  })
+}
+// insta_acccount.create({
+//   username: "an8amc1234",
+//   password: "tonyparker2003",
+//   status: "LIVE"
+// })
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -124,4 +152,8 @@ module.exports = {
   search: search,
   addAccount: addAccount,
   addVideo: addVideo,
+  updateVideo: updateVideo,
+  account_search: account_search,
+  video_search: video_search,
+  video_search_by_id: video_search_by_id
 }
