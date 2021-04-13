@@ -20,15 +20,16 @@ const videos = sequelize.define('videos', {
   drive_url: Sequelize.TEXT,
   title: Sequelize.TEXT,
   description: Sequelize.TEXT,
-  insta_id: Sequelize.INTEGER,
-  insta_url: Sequelize.TEXT,
+  insta_info_1: Sequelize.TEXT,
+  insta_info_2: Sequelize.TEXT,
+  insta_info_3: Sequelize.TEXT,
   status: Sequelize.TEXT,
   cache: Sequelize.TEXT,
 })
 const insta_acccount = sequelize.define('insta_account', {
   username: Sequelize.TEXT,
   password: Sequelize.TEXT,
-  status: Sequelize.INTEGER,
+  count: Sequelize.INTEGER,
 })
 sequelize.sync()
 
