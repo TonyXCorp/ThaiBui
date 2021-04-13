@@ -28,7 +28,7 @@ const videos = sequelize.define('videos', {
 const insta_acccount = sequelize.define('insta_account', {
   username: Sequelize.TEXT,
   password: Sequelize.TEXT,
-  status: Sequelize.TEXT,
+  status: Sequelize.INTEGER,
 })
 sequelize.sync()
 
@@ -149,14 +149,24 @@ function add_cache(id, link){
     where: {id:id}
   })
 }
-videos.findAll({
-  where: {
 
-  },
-  raw: true
-}).then(row=>{
-  console.log(row)
-})
+function video_search_by_status(status, callback){
+  videos.findAll({
+    where: {status:status},
+    raw: true
+  }).then(row=>{
+    callback(row)
+  })
+}
+// videos.create({
+//   drive_url: "Some drive",
+//   title: "Hello world",
+//   description: "This is a description",
+//   insta_id: 10,
+//   insta_url: "Helloooo",
+//   status: "Error upload",
+//   cache:"a.mp4"
+// })
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -169,5 +179,6 @@ module.exports = {
   video_search: video_search,
   video_search_by_id: video_search_by_id,
   add_cache: add_cache,
-  update: videos.update
+  update: videos.update,
+  video_search_by_status: video_search_by_status
 }

@@ -28,18 +28,20 @@
               <tr>
                 <th scope="col-1">Video ID</th>
                 <th scope="col-3">Drive URL</th>
+                <th scope="col-3">Account upload</th>
                 <th scope="col-1">Status</th>
-                <th scope="col-3">Actions</th>
+                <th scope="col-3">Function</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for = "item in fileBase.slice((rt-1)*50,rt*50-1)" >
                 <th scope="row">{{item.id}}</th>
                 <td><a :href="item.drive_url">{{item.drive_url}}</a></td>
+                <td>{{item.insta_id}}</td>
                 <td>{{item.status}}</td>
                 <td>
-                  <button class="btn btn-success btn-sm" @click = "_getLink(item.id)" >Get Link</button>
-                  <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete</button>
+                  <button class="btn btn-success btn-sm" @click = "_getLink(item.id)" >Get mp4</button>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete Video</button>
                   <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.id)">Delete Cache</button>
                 </td>
               </tr>

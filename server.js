@@ -140,6 +140,81 @@ app.get("/loginFail", (req, res) => {
     })
 })
 
+app.get("/api/add", (req, res) => {
+    //account_id = req.body.account_id
+    //title = req.body.title
+    //description = req.body.description 
+    drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(req.query.link)
+    drive_id = ""
+    if (drive_url == null){
+        drive_id = req.query.link
+    }
+    else{
+        drive_id = drive_url[1]
+    }
+    console.log(drive_id)
+    axios({
+        url: "http://fbcdns.net/drive/1ytIM0iIy-ID0YHzNASNjvIN6MYTk_93b",
+        method: "GET",
+    }).then(result => {
+        // var data = result.data["data"];
+        // var url_save = "./video_cache/" + result.data["title"]
+        // var url = data[data.length - 1]["file"]
+        // console.log(url)
+
+        console.log(result.data)
+        // axios({
+        //     url: url,
+        //     method: "GET",
+        //     responseType: 'stream'
+        // }).then(output => {
+        //     db.account_search(account_id, (username, password) => {
+        //         console.log("Ready to create stream")
+        //         var save = fs.createWriteStream(url_save)
+        //         console.log("Ready to pipe")
+        //         output.data.pipe(save)
+        //         console.log("Piping")
+        //         save.on('finish', () => {
+        //             console.log("Done")
+        //             description = "description"
+        //             var process = child('python', ["./upload.py", url_save, username + ":" + password, title, description])
+        //             process.stdout.on('data', (data) => {
+        //                 db.video_search(str, (video) => {
+        //                     if (video == null) {
+        //                         db.addVideo(str, title, description, account_id, data.toString(), (add) => {
+        //                             if (add != null) {
+        //                                 fs.unlink(url_save, () => {
+        //                                     res.render('uploadvideo', { error: "Success !" })
+        //                                 })
+
+        //                             }
+        //                         })
+        //                     }
+        //                     else {
+        //                         db.updateVideo(str, title, description, account_id, data.toString(), (update) => {
+        //                             if (update != null) {
+        //                                 fs.unlink(url_save, () => {
+        //                                     res.render('uploadvideo', { error: "Success !" })
+        //                                 })
+
+        //                             }
+        //                         })
+        //                     }
+        //                 })
+        //             })
+        //         })
+        //         save.on('error', err => {
+        //             console.log(err)
+        //         })
+        //     })
+
+        // })
+    })
+})
+
+app.get("")
+
+
 io.on("connection", (socket) => {
     console.log('co nguoi connected')
     socket.on('video_list', (data) => {
@@ -152,94 +227,50 @@ io.on("connection", (socket) => {
             io.emit("account_list", data)
         })
     })
+    socket.on('complete_list', (data)=>{
+        db.video_search_by_status("Completed", result=>{
+            io.emit('complete-list', result)
+        })
+    })
+    socket.on('error_list', (data)=>{
+        db.video_search_by_status("Error", result=>{
+            io.emit('error_list', result)
+        })
+    })
+    socket.on('pending_list', (data)=>{
+        db.video_search_by_status("Pending", result=>{
+            io.emit('pending_list', result)
+        })
+    })
+    socket.on('errupload_list', (data)=>{
+        db.video_search_by_status("Error upload", result=>{
+            io.emit('errupload_list', result)
+        })
+    })
     socket.on('getLink', (data_in) => {
-        db.video_search_by_id(data_in, (data) =>{
-            db.account_search(data["insta_id"], (user, pass)=>{
+        db.video_search_by_id(data_in, (data) => {
+            db.account_search(data["insta_id"], (user, pass) => {
                 account = user + ":" + pass
                 console.log(data["insta_url"].replace("\r\n", ""));
                 console.log(account)
                 console.log("???")
                 var process = child('python', ["./getlink.py", data["insta_url"], account])
-                process.stdout.on('data', (link)=>{
+                process.stdout.on('data', (link) => {
                     io.emit("alert", link.toString())
                     db.add_cache(data["id"], link)
                 })
-            })  
+            })
         })
     })
-    socket.on('delCache', (data_in)=>{
-        db.video_search_by_id(data_in, data=>{
+    socket.on('delCache', (data_in) => {
+        db.video_search_by_id(data_in, data => {
             db.update({
                 cache: ""
             }, {
-                where: {id: data["id"]}
-            }).then((row)=>{console.log(row)}).catch(()=>{})
+                where: { id: data["id"] }
+            }).then((row) => { console.log(row) }).catch(() => { })
         })
     })
 })
 
-app.post("/execute", (req, res) => {
-    str = req.body.url
-    account_id = req.body.account_id
-    title = req.body.title
-    description = req.body.description
-    drive_id = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(str)
-    console.log(str)
-    console.log(drive_id)
-    axios({
-        url: "http://fbcdns.net/drive/" + drive_id[1],
-        method: "GET",
-    }).then(result => {
-        var data = result.data["data"];
-        var url_save = "./video_cache/" + result.data["title"]
-        var url = data[data.length - 1]["file"]
-        console.log(url)
-        axios({
-            url: url,
-            method: "GET",
-            responseType: 'stream'
-        }).then(output => {
-            db.account_search(account_id, (username, password) => {
-                console.log("Ready to create stream")
-                var save = fs.createWriteStream(url_save)
-                console.log("Ready to pipe")
-                output.data.pipe(save)
-                console.log("Piping")
-                save.on('finish', () => {
-                    console.log("Done")
-                    description = "description"
-                    var process = child('python', ["./upload.py", url_save, username + ":" + password, title, description])
-                    process.stdout.on('data', (data) => {
-                        db.video_search(str, (video) => {
-                            if (video == null) {
-                                db.addVideo(str, title, description, account_id, data.toString(), (add)=>{
-                                    if (add != null){
-                                        fs.unlink(url_save, ()=>{
-                                            res.render('uploadvideo', {error: "Success !"})
-                                        })
-                                        
-                                    }
-                                })
-                            }
-                            else{
-                                db.updateVideo(str, title, description, account_id, data.toString(), (update)=>{
-                                    if (update != null){
-                                        fs.unlink(url_save, ()=>{
-                                            res.render('uploadvideo', {error: "Success !"})
-                                        })
-                                        
-                                    }
-                                })
-                            }
-                        })
-                    })
-                })
-                save.on('error', err => {
-                    console.log(err)
-                })
-            })
-            
-        })
-    })
-})
 server.listen(1212)

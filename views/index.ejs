@@ -1,18 +1,46 @@
 <%- include('header')%>
     <div id ="index">
-        <div class="main d-flex">
+        <div class="main d-flex flex-wrap">
             <div class="items d-flex">
                 <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-photo-video"></i></div>
                 <div class="info">
-                    <h5 class="amount">{{slV}}</h5>
+                    <h5 class="amount">{{totalV}}</h5>
                     <p>VIDEOS</p>
                 </div>
             </div>
             <div class="items d-flex ali">
                 <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-user"></i></div>
                 <div class="info">
-                    <h5 class="amount">{{slA}}</h5>
+                    <h5 class="amount">{{totalA}}</h5>
                     <p>ACCOUNTS</p>
+                </div>
+            </div>
+            <div class="items d-flex ali">
+                <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-user"></i></div>
+                <div class="info">
+                    <h5 class="amount">{{completeV}}</h5>
+                    <p>COMPLETED</p>
+                </div>
+            </div>
+            <div class="items d-flex ali">
+                <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-user"></i></div>
+                <div class="info">
+                    <h5 class="amount">{{errorV}}</h5>
+                    <p>DOWNLOAD ERR</p>
+                </div>
+            </div>
+            <div class="items d-flex ali">
+                <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-user"></i></div>
+                <div class="info">
+                    <h5 class="amount">{{pendingV}}</h5>
+                    <p>PENDING</p>
+                </div>
+            </div>
+            <div class="items d-flex ali">
+                <div class="img d-flex justify-content-center align-items-center"><i class="fas fa-user"></i></div>
+                <div class="info">
+                    <h5 class="amount">{{erruploadV}}</h5>
+                    <p>UPLOAD ERR</p>
                 </div>
             </div>
         </div>
