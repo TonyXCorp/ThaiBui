@@ -112,6 +112,19 @@ app.post("/account-add", (req, res) => {
     db.addAccount(input)
     res.render('addaccount', { error: "Success" })
 })
+app.post("/account-mutiadd", (req, res) => {
+    lines = req.body.input_mutiuser.split(' ').join('').split("\n")
+    for (line of  lines) {
+        if ((line != '\r') & (line != '')) {
+            username=line.split("|")[0]
+            password=line.split("|")[1]
+            input = username + ":" + password
+            db.addAccount(input)
+        }
+    }
+    res.render('addaccount', { error: "Success" })
+})
+
 
 app.get("/add-link", (req, res) => {
     if (req.isAuthenticated()) {

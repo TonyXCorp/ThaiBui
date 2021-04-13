@@ -5,22 +5,18 @@
 <table class="table">
             <thead>
               <tr>
-                <th scope="col-1">Account ID</th>
-                <th scope="col-3">Username</th>
-                <th scope="col-3">Password</th>
-                <th scope="col-2">Status</th>
-                <th scope="col-3">Actions</th>
-              </tr>
+                <th scope="col-1">STT</th>
+                <th scope="col-3">Account</th>
+                <th scope="col-3">SL VIDEOS</th>
             </thead>
             <tbody>
               <tr v-for = "item in fileBase">
                 <th scope="row">{{item.id}}</th>
                 <td>{{item.username}}</td>
-                <td>{{item.password}}</td>
                 <td>{{item.status}}</td>
                 <td>
-                  <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete</button>
-                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.id)">Delete Cache</button>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
+                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
                 </td>
               </tr>
             </tbody>
