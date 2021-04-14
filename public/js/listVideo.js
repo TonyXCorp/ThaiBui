@@ -15,9 +15,12 @@ var app = new Vue({
 			socket.emit("getLink", a)
 		},
 		_delete (a){
-			socket.emit("delCache", a)
+			socket.emit("delVideo", a)
+			socket.emit('video_list')
+				socket.on ('video_list',u=>{
+				return app.fileBase=u,app.doDai=u.length,app.tongtab=Math.floor(u.length/50)+1})
 		},
-		_deleteCache (a){console.log(a+'deleteCache')},
+		_deleteCache (a){socket.emit("delCache", a)},
 		_rt(n){
 			this.rt=this.viTri+n-3
 			if (this.rt>this.tongtab-2){

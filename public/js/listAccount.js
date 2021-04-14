@@ -9,8 +9,12 @@ var app = new Vue({
 	created: function () {
   	},
 	methods:{
-		_delete (a){console.log(a+'delete')},
-		_deleteCache (a){console.log(a+'deleteCache')},
+		_delete (a){
+			socket.emit('delAccount',a)
+			socket.emit('account_list')
+				socket.on ('account_list',u=>{
+				return app.fileBase=u})
+		},
 	},
 	computed:{
 	}

@@ -5,9 +5,10 @@
 <table class="table">
             <thead>
               <tr>
-                <th scope="col-1">STT</th>
-                <th scope="col-3">Account</th>
-                <th scope="col-3">SL VIDEOS</th>
+                <th scope="col">STT</th>
+                <th scope="col">Account</th>
+                <th scope="col">SL VIDEOS</th>
+                <th scope="col">FUNCTION</th>
             </thead>
             <tbody>
               <tr v-for = "item in fileBase">
@@ -15,8 +16,7 @@
                 <td>{{item.username}}</td>
                 <td>{{item.status}}</td>
                 <td>
-                  <button class="btn btn-danger btn-sm" @click = "_delete(item.STT)">Delete</button>
-                  <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.STT)">Delete Cache</button>
+                  <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete</button>
                 </td>
               </tr>
             </tbody>

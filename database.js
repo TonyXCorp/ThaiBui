@@ -86,13 +86,19 @@ function addAccount(input){
   })
 }
 
-function addVideo(drive_url, title, description, insta_id, insta_url, callback){
+function delAccount(id){
+  insta_acccount.destroy({where:{id:id}})
+}
+
+
+function addVideo(drive_url, title, description, insta_info_1, insta_info_2, insta_info_3, insta_url, callback){
   videos.create({
     drive_url: drive_url,
     title: title,
     description: description,
-    insta_id: insta_id,
-    insta_url: insta_url,
+    insta_info_1,
+    insta_info_2,
+    insta_info_3,
     status: "Complete"
   }).then(row=>{
     console.log(row)
@@ -103,12 +109,17 @@ function addVideo(drive_url, title, description, insta_id, insta_url, callback){
   })
 }
 
-function updateVideo(url, title, description, insta_id, insta_url, callback) {
+function delVideo(id){
+  videos.destroy({where:{id:id}})
+}
+
+function updateVideo(url, title, description, insta_info_1, insta_info_2, insta_info_3, callback) {
   videos.update({
     title: title,
     description: description,
-    insta_id: insta_id,
-    insta_url: insta_url, 
+    insta_info_1: insta_info_1,
+    insta_info_2: insta_info_2,
+    insta_info_3: insta_info_3, 
     status: "Completed"
   }, {
     where: {drive_url: url},
@@ -124,6 +135,14 @@ function account_search(id, callback) {
     raw: true
   }).then(row=>{
     callback(row["username"], row["password"])
+  })
+}
+function account_check(username, callback) {
+  insta_acccount.findOne({
+    where: {username:username},
+    raw: true
+  }).then(row=>{
+    if (row == null) {callback(true)} else callback(false)
   })
 }
 function video_search(url, callback) {
@@ -181,5 +200,8 @@ module.exports = {
   video_search_by_id: video_search_by_id,
   add_cache: add_cache,
   update: videos.update,
-  video_search_by_status: video_search_by_status
+  video_search_by_status: video_search_by_status,
+  account_check:account_check,
+  delVideo:delVideo,
+  delAccount:delAccount
 }

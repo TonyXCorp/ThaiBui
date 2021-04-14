@@ -109,20 +109,36 @@ app.post("/account-add", (req, res) => {
     username = req.body.input_user
     password = req.body.input_pass
     input = username + ":" + password
-    db.addAccount(input)
-    res.render('addaccount', { error: "Success" })
+    db.account_check(username,isCheck=>{
+        if(isCheck) {
+            db.addAccount(input)
+            res.render('addaccount', { error: "Success" })
+        }else
+        {
+            res.render('addaccount', { error: "error" })
+        }
+    })
 })
 app.post("/account-mutiadd", (req, res) => {
+    error='';
     lines = req.body.input_mutiuser.split(' ').join('').split("\n")
     for (line of  lines) {
         if ((line != '\r') & (line != '')) {
             username=line.split("|")[0]
             password=line.split("|")[1]
             input = username + ":" + password
-            db.addAccount(input)
+            console.log(input)
+            db.account_check(username,isCheck=>{
+                if(isCheck) {
+                    console.log(input)
+                }else
+                {
+                    error += username+' '
+                }
+            })
         }
     }
-    res.render('addaccount', { error: "Success" })
+    res.render('addaccount', { error: error })
 })
 
 
@@ -240,26 +256,26 @@ io.on("connection", (socket) => {
             io.emit("account_list", data)
         })
     })
-    socket.on('complete_list', (data)=>{
-        db.video_search_by_status("Completed", result=>{
-            io.emit('complete-list', result)
-        })
-    })
-    socket.on('error_list', (data)=>{
-        db.video_search_by_status("Error", result=>{
-            io.emit('error_list', result)
-        })
-    })
-    socket.on('pending_list', (data)=>{
-        db.video_search_by_status("Pending", result=>{
-            io.emit('pending_list', result)
-        })
-    })
-    socket.on('errupload_list', (data)=>{
-        db.video_search_by_status("Error upload", result=>{
-            io.emit('errupload_list', result)
-        })
-    })
+    // socket.on('complete_list', (data)=>{
+    //     db.video_search_by_status("Completed", result=>{
+    //         io.emit('complete-list', result)
+    //     })
+    // })
+    // socket.on('error_list', (data)=>{
+    //     db.video_search_by_status("Error", result=>{
+    //         io.emit('error_list', result)
+    //     })
+    // })
+    // socket.on('pending_list', (data)=>{
+    //     db.video_search_by_status("Pending", result=>{
+    //         io.emit('pending_list', result)
+    //     })
+    // })
+    // socket.on('errupload_list', (data)=>{
+    //     db.video_search_by_status("Error upload", result=>{
+    //         io.emit('errupload_list', result)
+    //     })
+    // })
     socket.on('getLink', (data_in) => {
         db.video_search_by_id(data_in, (data) => {
             db.account_search(data["insta_id"], (user, pass) => {
@@ -274,6 +290,12 @@ io.on("connection", (socket) => {
                 })
             })
         })
+    })
+    socket.on('delVideo',id=>{
+        db.delVideo(id)
+    })
+    socket.on('delAccount',id=>{
+        db.delAccount(id)
     })
     socket.on('delCache', (data_in) => {
         db.video_search_by_id(data_in, data => {
