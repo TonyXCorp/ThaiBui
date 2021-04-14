@@ -21,12 +21,12 @@ options = webdriver.ChromeOptions()
 options.add_argument('--log-level 3') 
 class multithread(Thread):
     def __init__(self, account, count):
-        super(multithread, self).__init__()
+        Thread.__init__(self)
         self.username = account.split(':')[0]
         self.password = account.split(':')[1]
         self.count = count
         driver.append(webdriver.Chrome(chrome_options=options))
-        wait.append(WebDriverWait(driver, 10))
+        wait.append(WebDriverWait(driver[self.count], 10))
     def run(self):
         try:
             driver[self.count].get("https://instagram.com")
@@ -55,19 +55,21 @@ class multithread(Thread):
             flag = True
             while (flag):
                 try:
-                    driver[self.count].find_element_by_xpath("""//div[contains(@class, '_bz0w')]""")
-                except:
+                    driver[self.count].find_element_by_xpath("""//div[@class='fj4kY CABe1']""")
+                except Exception as e:
                     flag = False
             try:
                 first_video = driver[self.count].find_element_by_class_name("_bz0w")
                 insta_link = first_video.get_attribute("href")
                 print(self.username + "|" + insta_link)
             except:
-                print("Error")
-        except Exception as e:
-            print(e)       
-        driver[self.count].quit()
+                print(self.username + "|" + "Error")
+        except:
+            print(self.username + "|" + "Error")      
+        # driver[self.count].quit()
 accounts = list_account.split("|")
-for i in range(0, 3):
-    thread.append(multithread(accounts[i], i))
-    thread[i].start()
+# for i in range(0, 3):
+#     thread.append(multithread(accounts[i], i))
+#     thread[i].start()
+thread.append(multithread(accounts[1], 0))
+thread[0].start()

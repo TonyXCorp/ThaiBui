@@ -6,6 +6,7 @@ const session = require('express-session');
 const axios = require('axios');
 const db = require('./database')
 const fs = require('fs')
+const fetch = require('node-fetch');
 
 const app = express()
 var server = require("http").Server(app);
@@ -109,31 +110,29 @@ app.post("/account-add", (req, res) => {
     username = req.body.input_user
     password = req.body.input_pass
     input = username + ":" + password
-    db.account_check(username,isCheck=>{
-        if(isCheck) {
+    db.account_check(username, isCheck => {
+        if (isCheck) {
             db.addAccount(input)
             res.render('addaccount', { error: "Success" })
-        }else
-        {
+        } else {
             res.render('addaccount', { error: "error" })
         }
     })
 })
 app.post("/account-mutiadd", (req, res) => {
-    error='';
+    error = '';
     lines = req.body.input_mutiuser.split(' ').join('').split("\n")
-    for (line of  lines) {
+    for (line of lines) {
         if ((line != '\r') & (line != '')) {
-            username=line.split("|")[0]
-            password=line.split("|")[1]
+            username = line.split("|")[0]
+            password = line.split("|")[1]
             input = username + ":" + password
             console.log(input)
-            db.account_check(username,isCheck=>{
-                if(isCheck) {
+            db.account_check(username, isCheck => {
+                if (isCheck) {
                     console.log(input)
-                }else
-                {
-                    error += username+' '
+                } else {
+                    error += username + ' '
                 }
             })
         }
@@ -175,10 +174,10 @@ app.get("/api/add", (req, res) => {
     //description = req.body.description 
     drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(req.query.link)
     drive_id = ""
-    if (drive_url == null){
+    if (drive_url == null) {
         drive_id = req.query.link
     }
-    else{
+    else {
         drive_id = drive_url[1]
     }
     console.log(drive_id)
@@ -291,10 +290,10 @@ io.on("connection", (socket) => {
             })
         })
     })
-    socket.on('delVideo',id=>{
+    socket.on('delVideo', id => {
         db.delVideo(id)
     })
-    socket.on('delAccount',id=>{
+    socket.on('delAccount', id => {
         db.delAccount(id)
     })
     socket.on('delCache', (data_in) => {
@@ -308,4 +307,43 @@ io.on("connection", (socket) => {
     })
 })
 
+
+app.get("/test", (req, res) => {
+    // var video_url //Temp var
+    // var process = child('python', ["./upload.py", "./video.mp4", "a", "title", "des"])
+    // process.stdout.on('data', (data)=>{
+    //     console.log(data.toString().split('\r\n'))
+    //     result = data.toString().split('\r\n')
+    //     if (result[0].split("|")[1] == "Error"){
+    //         info_1 = result[0].split("|")[0] + "|Error"
+    //     }
+    //     else{
+    //         info_1 = result[0]
+    //     }
+    //     db.insta_add_1(video_url, info_1) //var video_url
+    //     if (result[1].split("|")[1] == "Error"){
+    //         info_2 = result[1].split("|")[0] + "|Error"
+    //     }
+    //     else{
+    //         info_2 = result[1]
+    //     }
+    //     db.insta_add_2(video_url, info_2) //var video_url
+    //     if (result[2].split("|")[1] == "Error"){
+    //         info_3 = result[2].split("|")[0] + "|Error"
+    //     }
+    //     else{
+    //         info_3 = result[2]
+    //     }
+    //     db.insta_add_3(video_url, info_3) //var video_url
+    // })
+    download(buffer=>{
+        fs.writeFile(`./name.mp4`, buffer, () =>
+        console.log('finished downloading video!'));
+    })
+})
+async function download(callback) {
+    const response = await fetch("http://video.fvca5-2.fna.fbcdns.net/videoplayback?hash=eyJjb29raWUiOlsiRFJJVkVfU1RSRUFNPW9NOURsOUdoVGpROyBEb21haW49LmRvY3MuZ29vZ2xlLmNvbTsgUGF0aD0vOyBTZWN1cmU7IEh0dHBPbmx5OyBTYW1lU2l0ZT1ub25lIiwiU0lEQ0M9QUppNFFmSEoxOGpXQXFLRG5yM3BxRk04R1JsWC03N0F0NGVXVWw4SGpSNlVUR3U4cDBCa01sXzVfbHBvbWhWVjJmYXNzczBXWDRvOyBleHBpcmVzPVRodSwgMTQtQXByLTIwMjIgMjI6NTE6MzYgR01UOyBwYXRoPS87IGRvbWFpbj0uZ29vZ2xlLmNvbTsgcHJpb3JpdHk9aGlnaCIsIl9fU2VjdXJlLTNQU0lEQ0M9QUppNFFmRkVxSWdCemt1cHFIdDduU2I3M3FiTnVtTFNQVWxTSTFSTHFKcDRwR1cya0hIWmhRZ1ZmUzNrek8yWldrM1BnMVo5SndrOyBleHBpcmVzPVRodSwgMTQtQXByLTIwMjIgMjI6NTE6MzYgR01UOyBwYXRoPS87IGRvbWFpbj0uZ29vZ2xlLmNvbTsgU2VjdXJlOyBIdHRwT25seTsgcHJpb3JpdHk9aGlnaDsgU2FtZVNpdGU9bm9uZSJdLCJkb21haW4iOiJodHRwczovL3I1LS0tc24tNGc1ZTZuejcuYy5kb2NzLmdvb2dsZS5jb20vdmlkZW9wbGF5YmFjaz9leHBpcmU9MTYxODQ1NTA5NiZlaT0tSEYzWUpuTEw4eU53dFFQak9TUWdBZyZpcD05NC4yNDkuMTU0LjI1MCZjcD1RVlJHV2tWZlZGQlhSMWhQT21WMk5rWlhSalZEYlVkdGJWQXlZMUZTTUd0eWJqbDZVbGRtVFVkUGJWTlBjMnRITVMxbVgySkhkMncmaWQ9MzE1MjcxZjM2MDc3YWVmMSZpdGFnPTE4JnNvdXJjZT13ZWJkcml2ZSZyZXF1aXJlc3NsPXllcyZtaD1hUCZtbT0zMiZtbj1zbi00ZzVlNm56NyZtcz1zdSZtdj11Jm12aT01JnBsPTIyJnNjPXllcyZ0dGw9dHJhbnNpZW50JnN1c2M9ZHImZHJpdmVpZD0xeXRJTTBpSXktSUQwWUh6TkFTTmp2SU42TVlUa185M2ImYXBwPWV4cGxvcmVyJm1pbWU9dmlkZW8vbXA0JnZwcnY9MSZwcnY9MSZkdXI9NjkwLjA5NyZsbXQ9MTYxNzg2MjU0NjcwODA1NCZtdD0xNjE4NDQwNTgzJnNwYXJhbXM9ZXhwaXJlJTJDZWklMkNpcCUyQ2NwJTJDaWQlMkNpdGFnJTJDc291cmNlJTJDcmVxdWlyZXNzbCUyQ3R0bCUyQ3N1c2MlMkNkcml2ZWlkJTJDYXBwJTJDbWltZSUyQ3ZwcnYlMkNwcnYlMkNkdXIlMkNsbXQmc2lnPUFPcTBRSjh3UmdJaEFMNG01MHNVZ3UwOU5uQVdfRElQY3RxQktEaXJUcUl2MWl4cGhuUjh3d014QWlFQWpXQ044NDZJOEF6RU5QeEZ1dHJUS1luUURLMjNoZk53bng2Q1YxTWVUODA9JmxzcGFyYW1zPW1oJTJDbW0lMkNtbiUyQ21zJTJDbXYlMkNtdmklMkNwbCUyQ3NjJmxzaWc9QUczQ194QXdSUUloQUlkTlJ1RmJiVklmR1E4S1ViVlZuenpkd1ktUnFRdjFDN19KWjNCVWlvQS1BaUEzQk1qVE5XZ3B1ZXppcEFIWnNELWZyZ3I5ZUMwSmFzWVJyYUNHTzlCdEF3PT0iLCJmaWxlaWQiOiIxeXRJTTBpSXktSUQwWUh6TkFTTmp2SU42TVlUa185M2IifQ");
+    const buffer = await response.buffer();
+    callback(buffer)
+}
 server.listen(1212)

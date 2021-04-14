@@ -1,21 +1,21 @@
 const { Sequelize, Op, } = require('sequelize');
 
 const sequelize = new Sequelize('thaibui', 'administrators', 'Root@123', {
-    host: '103.151.52.169',
-    port: 3306,
-    dialect: "mysql",
-    define: {
-      freezeTableName: true,
-      timestamps: false
-    },
-    dialectOptions: {
-      ssl: false
-    }
-  });
+  host: '103.151.52.169',
+  port: 3306,
+  dialect: "mysql",
+  define: {
+    freezeTableName: true,
+    timestamps: false
+  },
+  dialectOptions: {
+    ssl: false
+  }
+});
 sequelize.authenticate()
 sequelize.sync()
-.then(()=>{ console.log("Success !")})
-.catch((err)=>{ console.log(err)})
+  .then(() => { console.log("Success !") })
+  .catch((err) => { console.log(err) })
 const videos = sequelize.define('videos', {
   drive_url: Sequelize.TEXT,
   title: Sequelize.TEXT,
@@ -33,65 +33,65 @@ const insta_acccount = sequelize.define('insta_account', {
 })
 sequelize.sync()
 
-function getVideos(callback){
-  videos.findAll({raw:true}).then(task=>{
+function getVideos(callback) {
+  videos.findAll({ raw: true }).then(task => {
     callback(task)
   })
 }
 
-function getAccounts(callback){
-  insta_acccount.findAll({raw:true}).then(task=>{
+function getAccounts(callback) {
+  insta_acccount.findAll({ raw: true }).then(task => {
     callback(task)
   })
 }
 
-function count(callback){
-    videos.count().then(c=>{
-      insta_acccount.count().then(b=>{
-        callback(c, b)
-      })
+function count(callback) {
+  videos.count().then(c => {
+    insta_acccount.count().then(b => {
+      callback(c, b)
     })
+  })
 }
 
-function search(input, callback){
+function search(input, callback) {
   videos.findAll({
     raw: true,
     where: {
       [Op.or]: [
-        {id: input},
-        {drive_url: input},
-        {title: input},
-        {description: input},
-        {insta_id: input},
-        {insta_url: input},
-        {status: input}
+        { id: input },
+        { drive_url: input },
+        { title: input },
+        { description: input },
+        { insta_id: input },
+        { insta_url: input },
+        { status: input }
       ]
     }
-  }).then(data=>{
+  }).then(data => {
     callback(data)
   })
 }
 
-function addAccount(input){
+function addAccount(input) {
   username = input.split(":")[0]
   password = input.split(":")[1]
   insta_acccount.create({
     username: username,
     password: password,
     status: "LIVE"
-  }).then(row=>{
+  }).then(row => {
     console.log(row)
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err)
   })
 }
 
-function delAccount(id){
-  insta_acccount.destroy({where:{id:id}})
+function delAccount(id) {
+  insta_acccount.destroy({ where: { id: id } })
 }
 
 
-function addVideo(drive_url, title, description, insta_info_1, insta_info_2, insta_info_3, insta_url, callback){
+function addVideo(drive_url, title, description, insta_info_1, insta_info_2, insta_info_3, insta_url, callback) {
   videos.create({
     drive_url: drive_url,
     title: title,
@@ -100,17 +100,17 @@ function addVideo(drive_url, title, description, insta_info_1, insta_info_2, ins
     insta_info_2,
     insta_info_3,
     status: "Complete"
-  }).then(row=>{
+  }).then(row => {
     console.log(row)
     callback("Done")
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err)
     callback(null)
   })
 }
 
-function delVideo(id){
-  videos.destroy({where:{id:id}})
+function delVideo(id) {
+  videos.destroy({ where: { id: id } })
 }
 
 function updateVideo(url, title, description, insta_info_1, insta_info_2, insta_info_3, callback) {
@@ -119,62 +119,62 @@ function updateVideo(url, title, description, insta_info_1, insta_info_2, insta_
     description: description,
     insta_info_1: insta_info_1,
     insta_info_2: insta_info_2,
-    insta_info_3: insta_info_3, 
+    insta_info_3: insta_info_3,
     status: "Completed"
   }, {
-    where: {drive_url: url},
-  }).then(()=>{
+    where: { drive_url: url },
+  }).then(() => {
     callback("Done")
-  }).catch((err)=>{
+  }).catch((err) => {
     callback(null)
   })
 }
 function account_search(id, callback) {
   insta_acccount.findOne({
-    where: {id: id},
+    where: { id: id },
     raw: true
-  }).then(row=>{
+  }).then(row => {
     callback(row["username"], row["password"])
   })
 }
 function account_check(username, callback) {
   insta_acccount.findOne({
-    where: {username:username},
+    where: { username: username },
     raw: true
-  }).then(row=>{
-    if (row == null) {callback(true)} else callback(false)
+  }).then(row => {
+    if (row == null) { callback(true) } else callback(false)
   })
 }
 function video_search(url, callback) {
   videos.findOne({
-    where: {drive_url: url},
+    where: { drive_url: url },
     raw: true
-  }).then(row=>{
+  }).then(row => {
     callback(row)
   })
 }
 function video_search_by_id(id, callback) {
   videos.findOne({
-    where: {id: id},
+    where: { id: id },
     raw: true
-  }).then(row=>{
+  }).then(row => {
     callback(row)
   })
 }
 
-function add_cache(id, link){
+function add_cache(id, link) {
   videos.update({
     cache: link
   }, {
-    where: {id:id}
+    where: { id: id }
   })
 }
 
-function video_search_by_status(status, callback){
+function video_search_by_status(status, callback) {
   videos.findAll({
-    where: {status:status},
+    where: { status: status },
     raw: true
-  }).then(row=>{
+  }).then(row => {
     callback(row)
   })
 }
@@ -187,6 +187,31 @@ function video_search_by_status(status, callback){
 //   status: "Error upload",
 //   cache:"a.mp4"
 // })
+
+function insta_add_1(video_url, info) {
+  videos.update({
+    insta_info_1: info
+  }, 
+  {
+    where: { drive_url: video_url }
+  })
+}
+function insta_add_2(video_url, info) {
+  videos.update({
+    insta_info_2: info
+  }, 
+  {
+    where: { drive_url: video_url }
+  })
+}
+function insta_add_3(video_url, info) {
+  videos.update({
+    insta_info_3: info
+  }, 
+  {
+    where: { drive_url: video_url }
+  })
+}
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -201,7 +226,10 @@ module.exports = {
   add_cache: add_cache,
   update: videos.update,
   video_search_by_status: video_search_by_status,
-  account_check:account_check,
-  delVideo:delVideo,
-  delAccount:delAccount
+  account_check: account_check,
+  delVideo: delVideo,
+  delAccount: delAccount,
+  insta_add_1: insta_add_1,
+  insta_add_2: insta_add_2,
+  insta_add_3: insta_add_3
 }
