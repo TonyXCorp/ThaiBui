@@ -110,31 +110,18 @@ app.post("/account-add", (req, res) => {
     username = req.body.input_user
     password = req.body.input_pass
     input = username + ":" + password
-    db.account_check(username, isCheck => {
-        if (isCheck) {
-            db.addAccount(input)
-            res.render('addaccount', { error: "Success" })
-        } else {
-            res.render('addaccount', { error: "error" })
-        }
-    })
+    db.account_check(input)
+    res.render('addaccount', { error: 'Success ' })
 })
-app.post("/account-mutiadd", (req, res) => {
+app.post("/account-mutiadd",(req, res) => {
     error = '';
     lines = req.body.input_mutiuser.split(' ').join('').split("\n")
-    for (line of lines) {
+    for (line of lines) { 
         if ((line != '\r') & (line != '')) {
             username = line.split("|")[0]
             password = line.split("|")[1]
             input = username + ":" + password
-            console.log(input)
-            db.account_check(username, isCheck => {
-                if (isCheck) {
-                    console.log(input)
-                } else {
-                    error += username + ' '
-                }
-            })
+            db.account_check(input)
         }
     }
     res.render('addaccount', { error: error })
@@ -144,14 +131,6 @@ app.post("/account-mutiadd", (req, res) => {
 app.get("/add-link", (req, res) => {
     if (req.isAuthenticated()) {
         res.render('addlink', { error: "" })
-    }
-    else {
-        res.render("login", { error: "Please login first" })
-    }
-})
-app.get("/upload-video", (req, res) => {
-    if (req.isAuthenticated()) {
-        res.render('uploadvideo', { error: "" })
     }
     else {
         res.render("login", { error: "Please login first" })
@@ -239,8 +218,13 @@ app.get("/api/add", (req, res) => {
         // })
     })
 })
-
-app.get("")
+ 
+app.post("/addVideo",(req,res)=>{
+    db.link_check(req.body.input_URL,(isChecked)=>{
+        console.log("ok")
+    })
+    res.render("addlink",{error:''})
+})
 
 
 io.on("connection", (socket) => {

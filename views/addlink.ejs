@@ -3,28 +3,37 @@
     <div class="sub-header">Add Link File To Tool</div>
     <div class="display"></div>
     <div class="container-fluid">
-	    	<form action="" method="POST">
-	    		<div class="row">
-	    			<span style="margin-bottom : 20px">Link Image: Example => https://www.google.com.vn/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png </span>
-	    		</div>
-	    		<div class="row">
-	    			<input class="form-control search-bar" type="text" placeholder="Nhập URL" maxlength="100" />
-	    		</div>
-	    		<div class="row">
-                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="add link" style="margin-left: 47%">
-                    <span style="margin-left: 48%" class="success-msg"><%= error %></span>
-            </div>
-	    	</form>
-	    	<form action="/link-mutiadd" method="POST">
-		        <label for="company">Gõ MutiLink </label>
+	    	<form action="/addVideo" method="POST">
+		        <label for="company">Video title: </label>
+            	<div class="row">
+                	<input class="form-control search-bar" name="input_title"  type="text" placeholder="Nhập title cho video">
+            	</div>
+            	<label for="company">Video description: </label>
+            	<div class="row">
+                	<input class="form-control search-bar" name="input_description"  type="text" placeholder="Nhập description video">
+            	</div>
+            	<label for="company">Google Driver URL: </label>
+            	<div class="row">
+                	<input class="form-control search-bar" name="input_URL" type="text" placeholder="Nhập URL cua video">
+            	</div>
 		        <div class="row">
-		            <textarea class="form-control search-bar" type="text" name="input_mutilink" placeholder="Nhập link cần thêm" rows="8"></textarea>
-		        </div>
-		        <div class="row">
-                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="Nhận URL auth" style="margin-left: 47%">
+                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="Send URL" style="margin-left: 47%">
                     <span style="margin-left: 48%" class="success-msg"><%= error %></span>
             	</div>
         	</form>
+        	<div class="container" style="margin-top:100px">
+        		<div class="row justify-content-center">
+        			<div class="col">
+        				<button class="btn btn-primary">Download</button>
+        			</div>
+        			<div class="col">
+        				<button class="btn btn-primary">Up to IGTV</button>
+        			</div>
+        			<div class="col">
+        				<button class="btn btn-primary">Xoa video cache</button>
+        			</div>
+        		</div>
+        	</div>
 	    </div>
 </div>
 </body>

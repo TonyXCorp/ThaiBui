@@ -72,7 +72,7 @@ function search(input, callback) {
   })
 }
 
-function addAccount(input) {
+function addAccount(input,callback) {
   username = input.split(":")[0]
   password = input.split(":")[1]
   insta_acccount.create({
@@ -80,9 +80,9 @@ function addAccount(input) {
     password: password,
     status: "LIVE"
   }).then(row => {
-    console.log(row)
+     callback = 'ok'
   }).catch(err => {
-    console.log(err)
+      callback ='err'
   })
 }
 
@@ -137,12 +137,20 @@ function account_search(id, callback) {
     callback(row["username"], row["password"])
   })
 }
-function account_check(username, callback) {
-  insta_acccount.findOne({
-    where: { username: username },
+function account_check(input) {
+    insta_acccount.findOne({
+    where: { username: input.split(":")[0] },
     raw: true
   }).then(row => {
-    if (row == null) { callback(true) } else callback(false)
+    if (row == null) { addAccount(input) }
+  })
+}
+function link_check(input,callback) {
+    videos.findOne({
+    where: { drive_url: input },
+    raw: true
+  }).then(row => {
+    if (row==null){callback(true)}else callback(false)
   })
 }
 function video_search(url, callback) {
@@ -231,5 +239,6 @@ module.exports = {
   delAccount: delAccount,
   insta_add_1: insta_add_1,
   insta_add_2: insta_add_2,
-  insta_add_3: insta_add_3
+  insta_add_3: insta_add_3,
+  link_check:link_check
 }
