@@ -220,10 +220,14 @@ app.get("/api/add", (req, res) => {
 })
  
 app.post("/addVideo",(req,res)=>{
-    db.link_check(req.body.input_URL,(isChecked)=>{
-        console.log("ok")
-    })
+    lines = req.body.input.split(' ').join('').split("\n")
+    for (line of lines) {
+        db.link_check(line,(isChecked)=>{
+            if (isChecked)console.log("ok")
+        })
+    }
     res.render("addlink",{error:''})
+
 })
 
 
