@@ -33,6 +33,17 @@ const insta_acccount = sequelize.define('insta_account', {
 })
 sequelize.sync()
 
+function xuatAccRD(callback1,callback2,callback3){
+  getAccounts(async data=>{
+    a1 = await Math.floor(Math.random() * data.length)
+    while (a2==a1){ a2 = await Math.floor(Math.random() * data.length)}
+    while ((a3==a2)||(a3==a1)){ a3 = await Math.floor(Math.random() * data.length)}
+    callback1(data[a1])
+    callback2(data[a2])
+    callback3(data[a3])
+  })
+}
+
 function getVideos(callback) {
   videos.findAll({ raw: true }).then(task => {
     callback(task)
