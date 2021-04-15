@@ -33,14 +33,12 @@ const insta_acccount = sequelize.define('insta_account', {
 })
 sequelize.sync()
 
-function xuatAccRD(callback1,callback2,callback3){
-  getAccounts(async data=>{
+function xuatAccRD(callback) {
+  getAccounts(async data => {
     a1 = await Math.floor(Math.random() * data.length)
-    while (a2==a1){ a2 = await Math.floor(Math.random() * data.length)}
-    while ((a3==a2)||(a3==a1)){ a3 = await Math.floor(Math.random() * data.length)}
-    callback1(data[a1])
-    callback2(data[a2])
-    callback3(data[a3])
+    while (a2 == a1) { a2 = await Math.floor(Math.random() * data.length) }
+    while ((a3 == a2) || (a3 == a1)) { a3 = await Math.floor(Math.random() * data.length) }
+    callback(data[a1], data[a2], data[a3])
   })
 }
 
@@ -83,7 +81,7 @@ function search(input, callback) {
   })
 }
 
-function addAccount(input,callback) {
+function addAccount(input, callback) {
   username = input.split(":")[0]
   password = input.split(":")[1]
   insta_acccount.create({
@@ -91,9 +89,9 @@ function addAccount(input,callback) {
     password: password,
     status: "LIVE"
   }).then(row => {
-     callback = 'ok'
+    callback = 'ok'
   }).catch(err => {
-      callback ='err'
+    callback = 'err'
   })
 }
 
@@ -149,19 +147,19 @@ function account_search(id, callback) {
   })
 }
 function account_check(input) {
-    insta_acccount.findOne({
+  insta_acccount.findOne({
     where: { username: input.split(":")[0] },
     raw: true
   }).then(row => {
     if (row == null) { addAccount(input) }
   })
 }
-function link_check(input,callback) {
-    videos.findOne({
+function link_check(input, callback) {
+  videos.findOne({
     where: { drive_url: input },
     raw: true
   }).then(row => {
-    if (row==null){callback(true)}else callback(false)
+    if (row == null) { callback(true) } else callback(false)
   })
 }
 function video_search(url, callback) {
@@ -210,26 +208,26 @@ function video_search_by_status(status, callback) {
 function insta_add_1(video_url, info) {
   videos.update({
     insta_info_1: info
-  }, 
-  {
-    where: { drive_url: video_url }
-  })
+  },
+    {
+      where: { drive_url: video_url }
+    })
 }
 function insta_add_2(video_url, info) {
   videos.update({
     insta_info_2: info
-  }, 
-  {
-    where: { drive_url: video_url }
-  })
+  },
+    {
+      where: { drive_url: video_url }
+    })
 }
 function insta_add_3(video_url, info) {
   videos.update({
     insta_info_3: info
-  }, 
-  {
-    where: { drive_url: video_url }
-  })
+  },
+    {
+      where: { drive_url: video_url }
+    })
 }
 module.exports = {
   count: count,
@@ -251,5 +249,6 @@ module.exports = {
   insta_add_1: insta_add_1,
   insta_add_2: insta_add_2,
   insta_add_3: insta_add_3,
-  link_check:link_check
+  link_check: link_check,
+  getAccRD: xuatAccRD
 }

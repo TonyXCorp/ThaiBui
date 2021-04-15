@@ -149,9 +149,6 @@ app.get("/loginFail", (req, res) => {
 })
 
 app.get("/api/add", (req, res) => {
-    //account_id = req.body.account_id
-    //title = req.body.title
-    //description = req.body.description 
     drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(req.query.link)
     drive_id = ""
     if (drive_url == null) {
@@ -161,67 +158,70 @@ app.get("/api/add", (req, res) => {
         drive_id = drive_url[1]
     }
     console.log(drive_id)
-    axios({
-        url: "http://fbcdns.net/drive/" + drive_id,
-        method: "GET",
-    }).then(result => {
-        var listVideo = result.data["data"]
-        var video_dest = "./video_cache/" + result.data["title"]
-        if (listVideo[listVideo.length - 1]["res"] >= 720) {
-            listVideo.forEach(e => {
-                if (e["res"] == 720) {
-                    video_link = e["file"]
-                }
+    db.link_check(drive_id, (ifExist) => {
+        if (ifExist) {
+            res.json({
+                status: '2'
             })
         } else {
-            listVideo.forEach(e => {
-                if (e["res"] == 360) {
-                    video_link = e["file"]
+            axios({
+                url: "http://fbcdns.net/drive/" + drive_id,
+                method: "GET",
+            }).then(result => {
+                var listVideo = result.data["data"]
+                var video_dest = "./video_cache/" + result.data["title"]
+                if (listVideo[listVideo.length - 1]["res"] >= 720) {
+                    listVideo.forEach(e => {
+                        if (e["res"] == 720) {
+                            video_link = e["file"]
+                        }
+                    })
+                } else {
+                    listVideo.forEach(e => {
+                        if (e["res"] == 360) {
+                            video_link = e["file"]
+                        }
+                    })
                 }
+                console.log(video_link)
+                getVideoDurationInSeconds(video_link).then((duration) => {
+                    if (duration < 3599) {
+                        console.log(duration)
+                        download(video_link, buffer => {
+                            fs.writeFile(video_dest, buffer, () =>
+                                console.log('Finished downloading video!'));
+                            db.getAccRD((account1, account2, account3) => {
+                                var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                                process.stdin.on('data', output => {
+                                    var result = output.toString().split("\r\n")
+                                    if (result[0].split("|")[1] == "Error") {
+                                        info_1 = result[0].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_1 = result[0]
+                                    }
+                                    db.insta_add_1(drive_id, info_1) //var video_url
+                                    if (result[1].split("|")[1] == "Error") {
+                                        info_2 = result[1].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_2 = result[1]
+                                    }
+                                    db.insta_add_2(drive_id, info_2) //var video_url
+                                    if (result[2].split("|")[1] == "Error") {
+                                        info_3 = result[2].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_3 = result[2]
+                                    }
+                                    db.insta_add_3(drive_id, info_3) //var video_url
+                                })
+                            })
+                        })
+                    }
+                })
             })
         }
-        console.log(video_link)
-        getVideoDurationInSeconds(video_link).then((duration) => {
-            if (duration < 3599) {
-                console.log(duration)
-                download(video_link, buffer => {
-                    fs.writeFile(video_dest, buffer, () =>
-                        console.log('Finished downloading video!'));
-                    //Random acc ở đây nhá
-
-
-                    //
-                    var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                    process.stdin.on('data', output => {
-                        var result = output.toString().split("\r\n")
-                        if (result[0].split("|")[1] == "Error") {
-                            info_1 = result[0].split("|")[0] + "|Error"
-                        }
-                        else {
-                            info_1 = result[0]
-                        }
-                        db.insta_add_1(drive_id, info_1) //var video_url
-                        if (result[1].split("|")[1] == "Error") {
-                            info_2 = result[1].split("|")[0] + "|Error"
-                        }
-                        else {
-                            info_2 = result[1]
-                        }
-                        db.insta_add_2(drive_id, info_2) //var video_url
-                        if (result[2].split("|")[1] == "Error") {
-                            info_3 = result[2].split("|")[0] + "|Error"
-                        }
-                        else {
-                            info_3 = result[2]
-                        }
-                        db.insta_add_3(drive_id, info_3) //var video_url
-                    })
-                })
-                //  
-
-                
-            }
-        })
     })
 })
 
