@@ -7,6 +7,7 @@ const axios = require('axios');
 const db = require('./database')
 const fs = require('fs')
 const fetch = require('node-fetch');
+const { getVideoDurationInSeconds } = require('get-video-duration')
 
 const app = express()
 var server = require("http").Server(app);
@@ -113,10 +114,10 @@ app.post("/account-add", (req, res) => {
     db.account_check(input)
     res.render('addaccount', { error: 'Success ' })
 })
-app.post("/account-mutiadd",(req, res) => {
+app.post("/account-mutiadd", (req, res) => {
     error = '';
     lines = req.body.input_mutiuser.split(' ').join('').split("\n")
-    for (line of lines) { 
+    for (line of lines) {
         if ((line != '\r') & (line != '')) {
             username = line.split("|")[0]
             password = line.split("|")[1]
@@ -161,72 +162,77 @@ app.get("/api/add", (req, res) => {
     }
     console.log(drive_id)
     axios({
-        url: "http://fbcdns.net/drive/1ytIM0iIy-ID0YHzNASNjvIN6MYTk_93b",
+        url: "http://fbcdns.net/drive/" + drive_id,
         method: "GET",
     }).then(result => {
-        // var data = result.data["data"];
-        // var url_save = "./video_cache/" + result.data["title"]
-        // var url = data[data.length - 1]["file"]
-        // console.log(url)
+        var listVideo = result.data["data"]
+        var video_dest = "./video_cache/" + result.data["title"]
+        if (listVideo[listVideo.length - 1]["res"] >= 720) {
+            listVideo.forEach(e => {
+                if (e["res"] == 720) {
+                    video_link = e["file"]
+                }
+            })
+        } else {
+            listVideo.forEach(e => {
+                if (e["res"] == 360) {
+                    video_link = e["file"]
+                }
+            })
+        }
+        console.log(video_link)
+        getVideoDurationInSeconds(video_link).then((duration) => {
+            if (duration < 3599) {
+                console.log(duration)
+                download(video_link, buffer => {
+                    fs.writeFile(video_dest, buffer, () =>
+                        console.log('Finished downloading video!'));
+                    //Random acc ở đây nhá
 
-        console.log(result.data)
-        // axios({
-        //     url: url,
-        //     method: "GET",
-        //     responseType: 'stream'
-        // }).then(output => {
-        //     db.account_search(account_id, (username, password) => {
-        //         console.log("Ready to create stream")
-        //         var save = fs.createWriteStream(url_save)
-        //         console.log("Ready to pipe")
-        //         output.data.pipe(save)
-        //         console.log("Piping")
-        //         save.on('finish', () => {
-        //             console.log("Done")
-        //             description = "description"
-        //             var process = child('python', ["./upload.py", url_save, username + ":" + password, title, description])
-        //             process.stdout.on('data', (data) => {
-        //                 db.video_search(str, (video) => {
-        //                     if (video == null) {
-        //                         db.addVideo(str, title, description, account_id, data.toString(), (add) => {
-        //                             if (add != null) {
-        //                                 fs.unlink(url_save, () => {
-        //                                     res.render('uploadvideo', { error: "Success !" })
-        //                                 })
 
-        //                             }
-        //                         })
-        //                     }
-        //                     else {
-        //                         db.updateVideo(str, title, description, account_id, data.toString(), (update) => {
-        //                             if (update != null) {
-        //                                 fs.unlink(url_save, () => {
-        //                                     res.render('uploadvideo', { error: "Success !" })
-        //                                 })
+                    //
+                    var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                    process.stdin.on('data', output => {
+                        var result = output.toString().split("\r\n")
+                        if (result[0].split("|")[1] == "Error") {
+                            info_1 = result[0].split("|")[0] + "|Error"
+                        }
+                        else {
+                            info_1 = result[0]
+                        }
+                        db.insta_add_1(drive_id, info_1) //var video_url
+                        if (result[1].split("|")[1] == "Error") {
+                            info_2 = result[1].split("|")[0] + "|Error"
+                        }
+                        else {
+                            info_2 = result[1]
+                        }
+                        db.insta_add_2(drive_id, info_2) //var video_url
+                        if (result[2].split("|")[1] == "Error") {
+                            info_3 = result[2].split("|")[0] + "|Error"
+                        }
+                        else {
+                            info_3 = result[2]
+                        }
+                        db.insta_add_3(drive_id, info_3) //var video_url
+                    })
+                })
+                //  
 
-        //                             }
-        //                         })
-        //                     }
-        //                 })
-        //             })
-        //         })
-        //         save.on('error', err => {
-        //             console.log(err)
-        //         })
-        //     })
-
-        // })
+                
+            }
+        })
     })
 })
- 
-app.post("/addVideo",(req,res)=>{
+
+app.post("/addVideo", (req, res) => {
     lines = req.body.input.split(' ').join('').split("\n")
     for (line of lines) {
-        db.link_check(line,(isChecked)=>{
-            if (isChecked)console.log("ok")
+        db.link_check(line, (isChecked) => {
+            if (isChecked) console.log("ok")
         })
     }
-    res.render("addlink",{error:''})
+    res.render("addlink", { error: '' })
 
 })
 
@@ -324,13 +330,10 @@ app.get("/test", (req, res) => {
     //     }
     //     db.insta_add_3(video_url, info_3) //var video_url
     // })
-    download(buffer=>{
-        fs.writeFile(`./name.mp4`, buffer, () =>
-        console.log('finished downloading video!'));
-    })
+
 })
-async function download(callback) {
-    const response = await fetch("http://video.fvca5-2.fna.fbcdns.net/videoplayback?hash=eyJjb29raWUiOlsiRFJJVkVfU1RSRUFNPW9NOURsOUdoVGpROyBEb21haW49LmRvY3MuZ29vZ2xlLmNvbTsgUGF0aD0vOyBTZWN1cmU7IEh0dHBPbmx5OyBTYW1lU2l0ZT1ub25lIiwiU0lEQ0M9QUppNFFmSEoxOGpXQXFLRG5yM3BxRk04R1JsWC03N0F0NGVXVWw4SGpSNlVUR3U4cDBCa01sXzVfbHBvbWhWVjJmYXNzczBXWDRvOyBleHBpcmVzPVRodSwgMTQtQXByLTIwMjIgMjI6NTE6MzYgR01UOyBwYXRoPS87IGRvbWFpbj0uZ29vZ2xlLmNvbTsgcHJpb3JpdHk9aGlnaCIsIl9fU2VjdXJlLTNQU0lEQ0M9QUppNFFmRkVxSWdCemt1cHFIdDduU2I3M3FiTnVtTFNQVWxTSTFSTHFKcDRwR1cya0hIWmhRZ1ZmUzNrek8yWldrM1BnMVo5SndrOyBleHBpcmVzPVRodSwgMTQtQXByLTIwMjIgMjI6NTE6MzYgR01UOyBwYXRoPS87IGRvbWFpbj0uZ29vZ2xlLmNvbTsgU2VjdXJlOyBIdHRwT25seTsgcHJpb3JpdHk9aGlnaDsgU2FtZVNpdGU9bm9uZSJdLCJkb21haW4iOiJodHRwczovL3I1LS0tc24tNGc1ZTZuejcuYy5kb2NzLmdvb2dsZS5jb20vdmlkZW9wbGF5YmFjaz9leHBpcmU9MTYxODQ1NTA5NiZlaT0tSEYzWUpuTEw4eU53dFFQak9TUWdBZyZpcD05NC4yNDkuMTU0LjI1MCZjcD1RVlJHV2tWZlZGQlhSMWhQT21WMk5rWlhSalZEYlVkdGJWQXlZMUZTTUd0eWJqbDZVbGRtVFVkUGJWTlBjMnRITVMxbVgySkhkMncmaWQ9MzE1MjcxZjM2MDc3YWVmMSZpdGFnPTE4JnNvdXJjZT13ZWJkcml2ZSZyZXF1aXJlc3NsPXllcyZtaD1hUCZtbT0zMiZtbj1zbi00ZzVlNm56NyZtcz1zdSZtdj11Jm12aT01JnBsPTIyJnNjPXllcyZ0dGw9dHJhbnNpZW50JnN1c2M9ZHImZHJpdmVpZD0xeXRJTTBpSXktSUQwWUh6TkFTTmp2SU42TVlUa185M2ImYXBwPWV4cGxvcmVyJm1pbWU9dmlkZW8vbXA0JnZwcnY9MSZwcnY9MSZkdXI9NjkwLjA5NyZsbXQ9MTYxNzg2MjU0NjcwODA1NCZtdD0xNjE4NDQwNTgzJnNwYXJhbXM9ZXhwaXJlJTJDZWklMkNpcCUyQ2NwJTJDaWQlMkNpdGFnJTJDc291cmNlJTJDcmVxdWlyZXNzbCUyQ3R0bCUyQ3N1c2MlMkNkcml2ZWlkJTJDYXBwJTJDbWltZSUyQ3ZwcnYlMkNwcnYlMkNkdXIlMkNsbXQmc2lnPUFPcTBRSjh3UmdJaEFMNG01MHNVZ3UwOU5uQVdfRElQY3RxQktEaXJUcUl2MWl4cGhuUjh3d014QWlFQWpXQ044NDZJOEF6RU5QeEZ1dHJUS1luUURLMjNoZk53bng2Q1YxTWVUODA9JmxzcGFyYW1zPW1oJTJDbW0lMkNtbiUyQ21zJTJDbXYlMkNtdmklMkNwbCUyQ3NjJmxzaWc9QUczQ194QXdSUUloQUlkTlJ1RmJiVklmR1E4S1ViVlZuenpkd1ktUnFRdjFDN19KWjNCVWlvQS1BaUEzQk1qVE5XZ3B1ZXppcEFIWnNELWZyZ3I5ZUMwSmFzWVJyYUNHTzlCdEF3PT0iLCJmaWxlaWQiOiIxeXRJTTBpSXktSUQwWUh6TkFTTmp2SU42TVlUa185M2IifQ");
+async function download(url, callback) {
+    const response = await fetch(url);
     const buffer = await response.buffer();
     callback(buffer)
 }

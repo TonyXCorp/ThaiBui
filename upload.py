@@ -14,9 +14,7 @@ wait = []
 thread = []
 input_data = sys.argv
 video_url = getPath(sys.argv[1])
-list_account = "faltadudre:W3Giklga|vopsiparza:NkMkfW8b|pognulirda:vyze0gWT"
-title = sys.argv[3]
-description = sys.argv[4]
+list_account = str(sys.argv[2]) + "|" + str(sys.argv[3]) + "|" + str(sys.argv[4])
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level 3') 
 class multithread(Thread):
@@ -46,8 +44,6 @@ class multithread(Thread):
                 up_percent = wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "gCQgN")))
                 if (up_percent.text == "100%"): 
                     break
-            driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/div/form/div/div[2]/div[4]/div/div/input""").send_keys(title)
-            driver[self.count].find_element_by_xpath("""//*[@id="react-root"]/section/main/div/form/div/div[2]/div[5]/div/div/textarea""").send_keys(description)
             driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/div/form/div/div[2]/div[10]/button""").click()
             while (1!=2):
                 if(driver[self.count].title != "Instagram"):
