@@ -1,4 +1,5 @@
 const express = require('express')
+require('timers')
 const child = require('child_process').spawn
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
@@ -352,4 +353,11 @@ async function download(url, callback) {
     const buffer = await response.buffer();
     callback(buffer)
 }
+
+async function automatic() {
+    setInterval(()=>{
+        console.log("1gio")
+    },3600000)
+}
+automatic()
 server.listen(1212)
