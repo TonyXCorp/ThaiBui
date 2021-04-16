@@ -38,6 +38,7 @@ function xuatAccRD(callback) {
     a1 = await Math.floor(Math.random() * data.length)
     while (a2 == a1) { a2 = await Math.floor(Math.random() * data.length) }
     while ((a3 == a2) || (a3 == a1)) { a3 = await Math.floor(Math.random() * data.length) }
+    console.log("Choose: " + data[a1] + "|" + data[a2] + "|" + data[a3])
     callback(data[a1], data[a2], data[a3])
   })
 }
@@ -100,11 +101,9 @@ function delAccount(id) {
 }
 
 
-function addVideo(drive_url, title, description, insta_info_1, insta_info_2, insta_info_3, insta_url, callback) {
+function addVideo(drive_url, insta_info_1, insta_info_2, insta_info_3, callback) {
   videos.create({
     drive_url: drive_url,
-    title: title,
-    description: description,
     insta_info_1,
     insta_info_2,
     insta_info_3,
@@ -229,6 +228,19 @@ function insta_add_3(video_url, info) {
       where: { drive_url: video_url }
     })
 }
+function update_account(username) {
+  insta_acccount.findOne({
+    where: { username: username },
+    raw: true
+  }).then((row) => {
+    amount = row["status"] + 1
+    insta_acccount.update({
+      status: amount
+    }, {
+      where: { username: username }
+    })
+  })
+}
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -250,5 +262,6 @@ module.exports = {
   insta_add_2: insta_add_2,
   insta_add_3: insta_add_3,
   link_check: link_check,
-  getAccRD: xuatAccRD
+  getAccRD: xuatAccRD,
+  update_account: update_account,
 }
