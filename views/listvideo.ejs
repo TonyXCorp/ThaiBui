@@ -37,7 +37,7 @@
               <tr v-for = "item in fileBase.slice((rt-1)*50,rt*50-1)" >
                 <th scope="row">{{item.id}}</th>
                 <td><a :href="item.drive_url">{{item.drive_url}}</a></td>
-                <td>{{item.insta_info_1+','+item.insta_info_2+','+item.insta_info_3}}</td>
+                <td>{{item.insta_info_1}}<br>{{item.insta_info_2}}<br>{{item.insta_info_3}}</td>
                 <td>{{item.status}}</td>
                 <td>
                   <button class="btn btn-success btn-sm" @click = "_getLink(item.id)" >Get mp4</button>
