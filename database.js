@@ -26,6 +26,9 @@ const videos = sequelize.define('videos', {
   status: Sequelize.TEXT,
   cache: Sequelize.TEXT,
 })
+const Administrator = sequelize.define('administrators',{
+  password: Sequelize.TEXT
+})
 const insta_acccount = sequelize.define('insta_account', {
   username: Sequelize.TEXT,
   password: Sequelize.TEXT,
@@ -81,7 +84,23 @@ function search(input, callback) {
     callback(data)
   })
 }
-
+function getpass (callback) {
+  Administrator.findOne({where:{id:'1'}})
+  .then(row=>{
+      callback(row.password)
+  })
+}
+function changePASS (oldpass,newpass){
+  Administrator.findOne({where:{id:'1'}})
+  .then(row=>{
+      if (row.password==oldpass) {
+          Administrator.update({
+          password:newpass
+        },{where:{id:'1'}}
+        )
+      }
+  })
+}
 function addAccount(input, callback) {
   username = input.split(":")[0]
   password = input.split(":")[1]
@@ -194,15 +213,10 @@ function video_search_by_status(status, callback) {
     callback(row)
   })
 }
-// videos.create({
-//   drive_url: "Some drive",
-//   title: "Hello world",
-//   description: "This is a description",
-//   insta_id: 10,
-//   insta_url: "Helloooo",
-//   status: "Error upload",
-//   cache:"a.mp4"
+// Administrator.create({
+//   password: '1'
 // })
+Administrator.findAll({}).then(row=>console.log(row))
 
 function insta_add_1(video_url, info) {
   videos.update({
@@ -264,4 +278,6 @@ module.exports = {
   link_check: link_check,
   getAccRD: xuatAccRD,
   update_account: update_account,
+  changePASS:changePASS,
+  getpass:getpass,
 }

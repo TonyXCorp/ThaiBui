@@ -1,4 +1,5 @@
 const express = require('express')
+require('timers')
 const child = require('child_process').spawn
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
@@ -27,14 +28,16 @@ passport.use(new localStrategy({
     usernameField: 'password',
     passwordField: 'password'
 },
-    (username, password, done) => { //các tên - name trường cần nhập, đủ tên trường thì Done 
-        if (password == "1") {
+    (username, password, done) => { //các tên - name trường cần nhập, đủ tên trường thì Done
+        db.getpass(pass=>{
+            if (password == pass) {
 
-            return done(null, "Administrator")
-        }
-        else {
-            return done(null, false)
-        }
+                return done(null, "Administrator")
+            }
+            else {
+                return done(null, false)
+            }
+        }) 
     }
 ))
 
@@ -50,7 +53,20 @@ passport.deserializeUser((admin, done) => {
         return done(null, false)
     }
 })
-
+app.get("/changePass",(req,res)=>{
+    if (req.isAuthenticated()) {
+        res.render('changePass',{error:''})
+    }
+    else {
+        res.render("login", { error: "Please login first" })
+    }
+})
+app.post("/changePass",(req,res)=>{
+    if (req.body.newpass==req.body.newpass2){
+        db.changePASS(req.body.oldpass,req.body.newpass)
+    }
+    res.render('changePass',{error:''})
+})
 app.get("/execute", (req, res) => {
     abs_link = "./video.mp4"
     username = "an8amc1234"
@@ -341,4 +357,11 @@ async function download(url, callback) {
     const process = child('gdown', [id])
     process.stdout.on('data', (data)=>{console.log(data.toString())})
 }
+
+async function automatic() {
+    setInterval(()=>{
+        console.log("1gio")
+    },3600000)
+}
+automatic()
 server.listen(1212)
