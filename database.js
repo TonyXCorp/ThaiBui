@@ -107,7 +107,7 @@ function addAccount(input, callback) {
   insta_acccount.create({
     username: username,
     password: password,
-    status: "LIVE"
+    count:0
   }).then(row => {
     callback = 'ok'
   }).catch(err => {
