@@ -10,6 +10,8 @@ const fs = require('fs')
 const fetch = require('node-fetch');
 const { getVideoDurationInSeconds } = require('get-video-duration')
 
+const exec = require('child_process').exec
+
 const app = express()
 var server = require("http").Server(app);
 app.set("view engine", "ejs")
@@ -204,37 +206,40 @@ app.get("/api/add", (req, res) => {
                 getVideoDurationInSeconds(video_link).then((duration) => {
                     if (duration < 3599) {
                         console.log(duration)
-                        download(drive_id, () => {
-                            // db.getAccRD((account1, account2, account3) => {
-                            //     var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                            //     process.stdin.on('data', output => {
-                            //         var result = output.toString().split("\r\n")
-                            //         if (result[0].split("|")[1] == "Error") {
-                            //             info_1 = result[0].split("|")[0] + "|Error"
-                            //         }
-                            //         else {
-                            //             info_1 = result[0]
-                            //             db.update_account(result[0].split("|")[0])
-                            //         }
-                            //         if (result[1].split("|")[1] == "Error") {
-                            //             info_2 = result[1].split("|")[0] + "|Error"
-                            //         }
-                            //         else {
-                            //             info_2 = result[1]
-                            //             db.update_account(result[1].split("|")[0])
-                            //         }
-                            //         if (result[2].split("|")[1] == "Error") {
-                            //             info_3 = result[2].split("|")[0] + "|Error"
-                            //         }
-                            //         else {
-                            //             info_3 = result[2]
-                            //             db.update_account(result[2].split("|")[0])
-                            //         }
-                            //         db.addVideo(drive_id, info_1, info_2, info_3, ()=>{
-                            //             fs.unlink(video_dest, (err)=>{ console.log(err)})
-                            //         })
-                            //     })
-                            // })           
+                        download(drive_id, result.data["title"], () => {
+                            db.getAccRD((acc1, acc2, acc3) => {
+                                account1 = acc1["username"] + ":" + acc1["password"]
+                                account2 = acc2["username"] + ":" + acc2["password"]
+                                account3 = acc3["username"] + ":" + acc3["password"]
+                                var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                                process.stdout.on('data', output => {
+                                    var result = output.toString().split("\r\n")
+                                    if (result[0].split("|")[1] == "Error") {
+                                        info_1 = result[0].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_1 = result[0]
+                                        db.update_account(result[0].split("|")[0])
+                                    }
+                                    if (result[1].split("|")[1] == "Error") {
+                                        info_2 = result[1].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_2 = result[1]
+                                        db.update_account(result[1].split("|")[0])
+                                    }
+                                    if (result[2].split("|")[1] == "Error") {
+                                        info_3 = result[2].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_3 = result[2]
+                                        db.update_account(result[2].split("|")[0])
+                                    }
+                                    db.addVideo(drive_id, info_1, info_2, info_3, ()=>{
+                                        fs.unlink(video_dest, (err)=>{ console.log(err)})
+                                    })
+                                })
+                            })           
                         })
                     }
                 })
@@ -291,17 +296,18 @@ io.on("connection", (socket) => {
     // })
     socket.on('getLink', (data_in) => {
         db.video_search_by_id(data_in, (data) => {
-            db.account_search(data["insta_id"], (user, pass) => {
-                account = user + ":" + pass
-                console.log(data["insta_url"].replace("\r\n", ""));
-                console.log(account)
-                console.log("???")
-                var process = child('python', ["./getlink.py", data["insta_url"], account])
-                process.stdout.on('data', (link) => {
-                    io.emit("alert", link.toString())
-                    db.add_cache(data["id"], link)
-                })
-            })
+            console.log(data)
+            // db.account_search(data["insta_id"], (user, pass) => {
+            //     account = user + ":" + pass
+            //     console.log(data["insta_url"].replace("\r\n", ""));
+            //     console.log(account)
+            //     console.log("???")
+            //     var process = child('python', ["./getlink.py", data["insta_url"], account])
+            //     process.stdout.on('data', (link) => {
+            //         io.emit("alert", link.toString())
+            //         db.add_cache(data["id"], link)
+            //     })
+            // })
         })
     })
     socket.on('delVideo', id => {
@@ -350,13 +356,16 @@ app.get("/test", (req, res) => {
     //     }
     //     db.insta_add_3(video_url, info_3) //var video_url
     // })
-
 })
-async function download(url, callback) {
+async function download(url, title, callback) {
     id = "https://drive.google.com/uc?id=" + url
-    const process = child('gdown', [id])
-    process.stdout.on('data', (data)=>{console.log(data.toString())})
+    const process = exec('cd video_cache && gdown '+id)
+    process.on("exit", (code)=>{
+        callback()
+    })
+
 }
+
 
 async function automatic() {
     setInterval(()=>{

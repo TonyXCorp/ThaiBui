@@ -40,7 +40,7 @@
                 <td>{{item.insta_info_1+','+item.insta_info_2+','+item.insta_info_3}}</td>
                 <td>{{item.status}}</td>
                 <td>
-                  <button class="btn btn-success btn-sm" @click = "_getLink(item.id)" >Get mp4</button>
+                  <button class="btn btn-success btn-sm" @click = "_getLink(item.drive_url)" >Get mp4</button>
                   <button class="btn btn-danger btn-sm" @click = "_delete(item.id)">Delete Video</button>
                   <button class="btn btn-danger btn-sm" @click = "_deleteCache(item.id)">Delete Cache</button>
                 </td>

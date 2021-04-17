@@ -39,6 +39,9 @@ sequelize.sync()
 function xuatAccRD(callback) {
   getAccounts(async data => {
     a1 = await Math.floor(Math.random() * data.length)
+    a2 = await Math.floor(Math.random() * data.length)
+    a3 = await Math.floor(Math.random() * data.length)
+    console.log(data)
     while (a2 == a1) { a2 = await Math.floor(Math.random() * data.length) }
     while ((a3 == a2) || (a3 == a1)) { a3 = await Math.floor(Math.random() * data.length) }
     console.log("Choose: " + data[a1] + "|" + data[a2] + "|" + data[a3])
@@ -190,7 +193,7 @@ function video_search(url, callback) {
 }
 function video_search_by_id(id, callback) {
   videos.findOne({
-    where: { id: id },
+    where: { drive_url: id },
     raw: true
   }).then(row => {
     callback(row)
