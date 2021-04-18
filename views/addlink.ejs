@@ -13,6 +13,18 @@
                     <span style="margin-left: 48%" class="success-msg"><%= error %></span>
             	</div>
         	</form>
+            <form action="/upVideo" method="POST">
+                <label>Up FILE (URL)</label>
+                <div class="row">
+                    <div class="col-5" style="margin-left:30%">
+                        <input type="file" class="form-control search-bar" name="fileupload" id="fileupload"> <label for="fileupload" style="color:FFF"> Select a file to upload</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="Send URL" style="margin-left: 47%">
+                    <span style="margin-left: 48%" class="success-msg"><%= error %></span>
+                </div>
+            </form>
 	    </div>
 </div>
 </body>
