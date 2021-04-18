@@ -14,7 +14,11 @@ wait = []
 thread = []
 input_data = sys.argv
 video_url = getPath(sys.argv[1])
-list_account = str(sys.argv[2]) + "|" + str(sys.argv[3]) + "|" + str(sys.argv[4])
+list_account = str(sys.argv[2])
+if str(sys.argv[3]) != 'null':
+    list_account += "|" + str(sys.argv[3])
+if str(sys.argv[4]) != "null":
+    list_account += "|" + str(sys.argv[4])
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level 3') 
 class multithread(Thread):
@@ -35,7 +39,7 @@ class multithread(Thread):
             driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
             try:
                 wait[self.count].until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
-            except:
+            except Exception as e:
                 pass
             driver[self.count].get("https://www.instagram.com/tv/upload")
             upload_input = wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "YeWti")))
@@ -44,6 +48,8 @@ class multithread(Thread):
                 up_percent = wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "gCQgN")))
                 if (up_percent.text == "100%"): 
                     break
+            driver[self.count].find_element_by_xpath("""//input[@placeholder='Title']""").send_keys("Title")
+            driver[self.count].find_element_by_xpath("""//textarea[@placeholder='Description']""").send_keys("Description")
             driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/div/form/div/div[2]/div[10]/button""").click()
             while (1!=2):
                 if(driver[self.count].title != "Instagram"):
@@ -58,14 +64,12 @@ class multithread(Thread):
                 first_video = driver[self.count].find_element_by_class_name("_bz0w")
                 insta_link = first_video.get_attribute("href")
                 print(self.username + "|" + insta_link)
-            except:
+            except Exception as e:
                 print(self.username + "|" + "Error")
-        except:
+        except Exception as e:
             print(self.username + "|" + "Error")      
-        # driver[self.count].quit()
+        driver[self.count].quit()
 accounts = list_account.split("|")
-# for i in range(0, 3):
-#     thread.append(multithread(accounts[i], i))
-#     thread[i].start()
-thread.append(multithread(accounts[1], 0))
-thread[0].start()
+for i in range(0, accounts.length-1):
+    thread.append(multithread(accounts[i], i))
+    thread[i].start()
