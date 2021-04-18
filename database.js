@@ -36,7 +36,7 @@ const insta_acccount = sequelize.define('insta_account', {
 })
 sequelize.sync()
 
-function xuatAccRD(callback) {
+function xuatAccRD(amount, callback) {
   getAccounts(async data => {
     a1 = await Math.floor(Math.random() * data.length)
     a2 = await Math.floor(Math.random() * data.length)
@@ -45,7 +45,16 @@ function xuatAccRD(callback) {
     while (a2 == a1) { a2 = await Math.floor(Math.random() * data.length) }
     while ((a3 == a2) || (a3 == a1)) { a3 = await Math.floor(Math.random() * data.length) }
     console.log("Choose: " + data[a1] + "|" + data[a2] + "|" + data[a3])
-    callback(data[a1], data[a2], data[a3])
+    switch (amount) {
+      case 1:
+        callback(data[a1])
+        break;
+      case 2: 
+        callback(data[a1], data[a2])
+        break;
+      case 3:
+        callback(data[a1], data[a2], data[a3])
+    }
   })
 }
 
@@ -191,20 +200,20 @@ function video_search(url, callback) {
     callback(row)
   })
 }
-function video_search_by_id(id, callback) {
+function video_search_by_url(url, callback) {
   videos.findOne({
-    where: { drive_url: id },
+    where: { drive_url: url },
     raw: true
   }).then(row => {
     callback(row)
   })
 }
 
-function add_cache(id, link) {
+function add_cache(url, link) {
   videos.update({
     cache: link
   }, {
-    where: { id: id }
+    where: { drive_url: url }
   })
 }
 
@@ -258,6 +267,25 @@ function update_account(username) {
     })
   })
 }
+function get_password(user1, user2, user3, callback){
+  acc1=""
+  acc2=""
+  acc3=""
+  getAccounts(async data => {
+    data.forEach(e=>{
+      if (e["username"] == user1){
+        acc1=user1 + "|" + e["password"]
+      }
+      if (e["username"] == user2){
+        acc2=user2 + "|" + e["password"]
+      }
+      if (e["username"] == user3){
+        acc3=user3 + "|" + e["password"]
+      }
+    })
+    callback(acc1, acc2, acc3)
+  })
+}
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -268,9 +296,8 @@ module.exports = {
   updateVideo: updateVideo,
   account_search: account_search,
   video_search: video_search,
-  video_search_by_id: video_search_by_id,
+  video_search_by_url: video_search_by_url,
   add_cache: add_cache,
-  update: videos.update,
   video_search_by_status: video_search_by_status,
   account_check: account_check,
   delVideo: delVideo,
@@ -283,4 +310,5 @@ module.exports = {
   update_account: update_account,
   changePASS:changePASS,
   getpass:getpass,
+  getPassword:get_password,
 }
