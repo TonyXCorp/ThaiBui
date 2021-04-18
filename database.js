@@ -138,7 +138,7 @@ function addVideo(drive_url, insta_info_1, insta_info_2, insta_info_3, callback)
     insta_info_1,
     insta_info_2,
     insta_info_3,
-    status: "Complete"
+    status: "Completed"
   }).then(row => {
     console.log(row)
     callback("Done")
