@@ -3,31 +3,6 @@
     <div class="sub-header">Add Account</div>
     <div class="display"></div>
     <div class="container-fluid">
-        <form action="/account-add" method="POST">
-            <label for="company">Gõ Account</label>
-            <!-- <div class="row form-control search-bar" style="width: 101.5%">
-                <select style="width: 100%" class="search-bar">
-                    <option value="0">Google Bình thường</option>
-                    <option value="1">Google Driver nhóm</option>
-                </select>
-            </div> -->
-            <label for="company">Username: </label>
-            <div class="row">
-                <input class="form-control search-bar" name="input_user" id="ac_email" type="text" placeholder="Nhập username cần thêm">
-            </div>
-            <label for="company">Password :</label>
-            <div class="row">
-                <input class="form-control search-bar" name="input_pass" id="ac_idteamfolder" type="text" placeholder="Nhập password cần thêm">
-            </div>
-            <!-- <label for="company">Chứng chỉ : <a style="color:red" target="_blank" href="https://developers.google.com/drive/api/v3/quickstart/nodejs">Click here</a> (Nhấp vào Bật API Drive -> Tải xuống tệp và mở Notepad Sao chép dữ liệu chèn vào văn bản) </label>
-            <div class="row">
-                <textarea class="form-control search-bar" id="txt_cer" name="txt_cer" rows="7" placeholder="Văn bản trong tệp Thông tin đăng nhập" style=" height:191px;"></textarea>
-            </div> -->
-            <div class="row">
-                    <input class="btn btn-primary" type="submit" id="btn-sub" name="submit" value="Nhận URL auth" style="margin-left: 47%">
-                    <span style="margin-left: 48%" class="success-msg"><%= error %></span>
-            </div>
-        </form>
         <form action="/account-mutiadd" method="POST">
             <label for="company">Gõ MutiAccount (user | password)</label>
             <div class="row">
