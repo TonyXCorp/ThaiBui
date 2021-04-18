@@ -183,68 +183,73 @@ app.get("/api/add", (req, res) => {
             })
         } else {
             console.log("Else")
-            // axios({
-            //     url: "http://fbcdns.net/drive/" + drive_id,
-            //     method: "GET",
-            // }).then(result => {
-            //     var listVideo = result.data["data"]
-            //     var video_dest = "./video_cache/" + result.data["title"]
-            //     console.log(video_dest)
-            //     if (listVideo[listVideo.length - 1]["res"] >= 720) {
-            //         listVideo.forEach(e => {
-            //             if (e["res"] == 720) {
-            //                 video_link = e["file"]
-            //             }
-            //         })
-            //     } else {
-            //         listVideo.forEach(e => {
-            //             if (e["res"] == 360) {
-            //                 video_link = e["file"]
-            //             }
-            //         })
-            //     }
-            //     console.log(video_link)
-            //     getVideoDurationInSeconds(video_link).then((duration) => {
-            //         if (duration < 3599) {
-            //             console.log(duration)
-            //             download(drive_id, result.data["title"], () => {
-            //                 db.getAccRD(3, (acc1, acc2, acc3) => {
-            //                     account1 = acc1["username"] + ":" + acc1["password"]
-            //                     account2 = acc2["username"] + ":" + acc2["password"]
-            //                     account3 = acc3["username"] + ":" + acc3["password"]
-            //                     var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-            //                     process.stdout.on('data', output => {
-            //                         var result = output.toString().split("\r\n")
-            //                         if (result[0].split("|")[1] == "Error") {
-            //                             info_1 = result[0].split("|")[0] + "|Error"
-            //                         }
-            //                         else {
-            //                             info_1 = result[0]
-            //                             db.update_account(result[0].split("|")[0])
-            //                         }
-            //                         if (result[1].split("|")[1] == "Error") {
-            //                             info_2 = result[1].split("|")[0] + "|Error"
-            //                         }
-            //                         else {
-            //                             info_2 = result[1]
-            //                             db.update_account(result[1].split("|")[0])
-            //                         }
-            //                         if (result[2].split("|")[1] == "Error") {
-            //                             info_3 = result[2].split("|")[0] + "|Error"
-            //                         }
-            //                         else {
-            //                             info_3 = result[2]
-            //                             db.update_account(result[2].split("|")[0])
-            //                         }
-            //                         db.addVideo(drive_id, info_1, info_2, info_3, () => {
-            //                             fs.unlink(video_dest, (err) => { console.log(err) })
-            //                         })
-            //                     })
-            //                 })
-            //             })
-            //         }
-            //     })
-            // })
+            axios({
+                url: "http://fbcdns.net/drive/" + drive_id,
+                method: "GET",
+            }).then(result => {
+                var listVideo = result.data["data"]
+                var video_dest = "./video_cache/" + result.data["title"]
+                console.log(video_dest)
+                if (listVideo[listVideo.length - 1]["res"] >= 720) {
+                    listVideo.forEach(e => {
+                        if (e["res"] == 720) {
+                            video_link = e["file"]
+                        }
+                    })
+                } else {
+                    listVideo.forEach(e => {
+                        if (e["res"] == 360) {
+                            video_link = e["file"]
+                        }
+                    })
+                }
+                console.log(video_link)
+                getVideoDurationInSeconds(video_link).then((duration) => {
+                    if (duration < 3599) {
+                        console.log(duration)
+                        download(drive_id, result.data["title"], () => {
+                            db.getAccRD(3, (acc1, acc2, acc3) => {
+                                account1 = acc1["username"] + ":" + acc1["password"]
+                                account2 = acc2["username"] + ":" + acc2["password"]
+                                account3 = acc3["username"] + ":" + acc3["password"]
+                                var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                                process.stdout.on('data', output => {
+                                    var result = output.toString().split("\r\n")
+                                    if (result[0].split("|")[1] == "Error") {
+                                        info_1 = result[0].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_1 = result[0]
+                                        db.update_account(result[0].split("|")[0])
+                                    }
+                                    if (result[1].split("|")[1] == "Error") {
+                                        info_2 = result[1].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_2 = result[1]
+                                        db.update_account(result[1].split("|")[0])
+                                    }
+                                    if (result[2].split("|")[1] == "Error") {
+                                        info_3 = result[2].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_3 = result[2]
+                                        db.update_account(result[2].split("|")[0])
+                                    }
+                                    db.addVideo(drive_id, info_1, info_2, info_3, () => {
+                                        fs.unlink(video_dest, (err) => { console.log(err) })
+                                        res.json({
+                                            account1: info1,
+                                            account2: info2,
+                                            account3: info3
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    }
+                })
+            })
         }
     })
 })
@@ -296,129 +301,8 @@ io.on("connection", (socket) => {
         })
     })
     socket.on('getLink', (data_in) => {
-        db.video_search_by_url(data_in, (data) => {
-            console.log(data)
-            user1 = data["insta_info_1"].split("|")[0]
-            user2 = data["insta_info_2"].split("|")[0]
-            user3 = data["insta_info_3"].split("|")[0]
-            db.getPassword(user1, user2, user3, (acc1, acc2, acc3) => {
-                data1 = acc1.replace("\r", "") + "|" + data["insta_info_1"].split("|")[1]
-                data2 = acc2.replace("\r", "") + "|" + data["insta_info_2"].split("|")[1]
-                data3 = acc3.replace("\r", "") + "|" + data["insta_info_3"].split("|")[1]
-                var process = child("python", ["./getlink.py", data1, data2, data3])
-                process.stdout.on('data', count => {
-                    amount = count.toString()
-                    num = amount.split("|")[1]
-                    io.emit('alert', amount.split("|")[0])
-                    if (num != "0") {
-                        axios({
-                            url: "http://fbcdns.net/drive/" + data_in,
-                            method: 'GET'
-                        }).then(result => {
-                            var listVideo = result.data["data"]
-                            var video_dest = "./video_cache" + result.data["title"]
-                            if (listVideo[listVideo.length - 1]["res"] >= 720) {
-                                listVideo.forEach(e => {
-                                    if (e["res"] == 720) {
-                                        video_link = e["file"]
-                                    }
-                                })
-                            } else {
-                                listVideo.forEach(e => {
-                                    if (e["res"] == 360) {
-                                        video_link = e["file"]
-                                    }
-                                })
-                            }
-                            download(video_link, () => {
-                                if (num == "1") {
-                                    db.getAccRD(1, (acc) => {
-                                        account1 = acc["username"] + ":" + acc["password"]
-                                        var process = child('python', ["./upload.py", video_dest, account1, "null", "null"])
-                                        process.stdout.on('data', output => {
-                                            var result = output.toString()
-                                            if (result.split("|")[1] != "Error") {
-                                                info_1 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-                                                db.insta_add_1(data_in, info_1)
-                                            } else {
-                                                info_1 = result.split("|")[0] + "|Error"
-                                            }
-                                        })
-                                    })
-                                }
-
-                                if (num == "2") {
-                                    db.getAccRD(2, (acc1, acc2) => {
-                                        account1 = acc1["username"] + ":" + acc1["password"]
-                                        account2 = acc2["username"] + ":" + acc2["password"]
-                                        var process = child('python', ["./upload.py", video_dest, account1, account2, "null"])
-                                        process.stdout.on('data', output => {
-                                            var result = output.toString().replace("\r\n")
-                                            if (result[0].split("|")[1] != "Error") {
-                                                info_1 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-
-                                            } else {
-                                                info_1 = result.split("|")[0] + "|Error"
-                                            }
-                                            db.insta_add_1(data_in, info_1)
-                                            if (result[1].split("|")[1] != "Error") {
-                                                info_2 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-                                                db.insta_add_2(data_in, info_2)
-                                            } else {
-                                                info_2 = result.split("|")[0] + "|Error"
-                                            }
-                                            db.insta_add_2(data_in, info_2)
-                                        })
-                                    })
-                                }
-
-                                if (num == "3") {
-                                    db.getAccRD(3, (acc1, acc2, acc3) => {
-                                        account1 = acc1["username"] + ":" + acc1["password"]
-                                        account2 = acc2["username"] + ":" + acc2["password"]
-                                        account3 = acc3["username"] + ":" + acc3["password"]
-                                        var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                                        process.stdout.on('data', output => {
-                                            var result = output.toString().replace("\r\n")
-                                            if (result[0].split("|")[1] != "Error") {
-                                                info_1 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-
-                                            } else {
-                                                info_1 = result.split("|")[0] + "|Error"
-                                            }
-                                            db.insta_add_1(data_in, info_1)
-                                            if (result[1].split("|")[1] != "Error") {
-                                                info_2 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-                                                db.insta_add_2(data_in, info_2)
-                                            } else {
-                                                info_2 = result.split("|")[0] + "|Error"
-                                            }
-                                            db.insta_add_2(data_in, info_2)
-                                            if (result[2].split("|")[1] != "Error") {
-                                                info_3 = result.split("|")[0]
-                                                db.update_account(result.split("|")[0])
-                                                db.insta_add_3(data_in, info_3)
-                                            } else {
-                                                info_3 = result.split("|")[0] + "|Error"
-                                            }
-                                            db.insta_add_3(data_in, info_3)
-                                        })
-                                    })
-                                }
-                            })
-                            //1 acc
-
-                        })
-                    }
-                    db.add_cache(data_in, amount.split("|")[0])
-                })
-            })
-
+        getmp4(data_in, (amount) =>{
+            io.emit('alert', amount.split("|")[0])
         })
     })
     socket.on('delVideo', id => {
@@ -447,6 +331,142 @@ async function download(url, callback) {
 
 }
 
+app.get("/api/json/getmp4", (req, res)=>{
+    data_in = req.query.link
+    getmp4(data_in, amount=>{
+        res.json({
+            status: 1,
+            id: data_in,
+            account: amount.split("|")[2],
+            linkmp4: amount.split("|")[0]
+        })
+    })
+})
+
+
+async function getmp4(data_in, callback){
+    db.video_search_by_url(data_in, (data) => {
+        user1 = data["insta_info_1"].split("|")[0]
+        user2 = data["insta_info_2"].split("|")[0]
+        user3 = data["insta_info_3"].split("|")[0]
+        db.getPassword(user1, user2, user3, (acc1, acc2, acc3) => {
+            data1 = acc1.replace("\r", "") + "|" + data["insta_info_1"].split("|")[1]
+            data2 = acc2.replace("\r", "") + "|" + data["insta_info_2"].split("|")[1]
+            data3 = acc3.replace("\r", "") + "|" + data["insta_info_3"].split("|")[1]
+            var process = child("python", ["./getlink.py", data1, data2, data3])
+            process.stdout.on('data', count => {
+                amount = count.toString()
+                num = amount.split("|")[1]
+                if (num != "0") {
+                    axios({
+                        url: "http://fbcdns.net/drive/" + data_in,
+                        method: 'GET'
+                    }).then(result => {
+                        var listVideo = result.data["data"]
+                        var video_dest = "./video_cache" + result.data["title"]
+                        if (listVideo[listVideo.length - 1]["res"] >= 720) {
+                            listVideo.forEach(e => {
+                                if (e["res"] == 720) {
+                                    video_link = e["file"]
+                                }
+                            })
+                        } else {
+                            listVideo.forEach(e => {
+                                if (e["res"] == 360) {
+                                    video_link = e["file"]
+                                }
+                            })
+                        }
+                        download(video_link, () => {
+                            if (num == "1") {
+                                db.getAccRD(1, (acc) => {
+                                    account1 = acc["username"] + ":" + acc["password"]
+                                    var process = child('python', ["./upload.py", video_dest, account1, "null", "null"])
+                                    process.stdout.on('data', output => {
+                                        var result = output.toString()
+                                        if (result.split("|")[1] != "Error") {
+                                            info_1 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+                                            db.insta_add_1(data_in, info_1)
+                                        } else {
+                                            info_1 = result.split("|")[0] + "|Error"
+                                        }
+                                    })
+                                })
+                            }
+
+                            if (num == "2") {
+                                db.getAccRD(2, (acc1, acc2) => {
+                                    account1 = acc1["username"] + ":" + acc1["password"]
+                                    account2 = acc2["username"] + ":" + acc2["password"]
+                                    var process = child('python', ["./upload.py", video_dest, account1, account2, "null"])
+                                    process.stdout.on('data', output => {
+                                        var result = output.toString().replace("\r\n")
+                                        if (result[0].split("|")[1] != "Error") {
+                                            info_1 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+
+                                        } else {
+                                            info_1 = result.split("|")[0] + "|Error"
+                                        }
+                                        db.insta_add_1(data_in, info_1)
+                                        if (result[1].split("|")[1] != "Error") {
+                                            info_2 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+                                            db.insta_add_2(data_in, info_2)
+                                        } else {
+                                            info_2 = result.split("|")[0] + "|Error"
+                                        }
+                                        db.insta_add_2(data_in, info_2)
+                                    })
+                                })
+                            }
+
+                            if (num == "3") {
+                                db.getAccRD(3, (acc1, acc2, acc3) => {
+                                    account1 = acc1["username"] + ":" + acc1["password"]
+                                    account2 = acc2["username"] + ":" + acc2["password"]
+                                    account3 = acc3["username"] + ":" + acc3["password"]
+                                    var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                                    process.stdout.on('data', output => {
+                                        var result = output.toString().replace("\r\n")
+                                        if (result[0].split("|")[1] != "Error") {
+                                            info_1 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+
+                                        } else {
+                                            info_1 = result.split("|")[0] + "|Error"
+                                        }
+                                        db.insta_add_1(data_in, info_1)
+                                        if (result[1].split("|")[1] != "Error") {
+                                            info_2 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+                                            db.insta_add_2(data_in, info_2)
+                                        } else {
+                                            info_2 = result.split("|")[0] + "|Error"
+                                        }
+                                        db.insta_add_2(data_in, info_2)
+                                        if (result[2].split("|")[1] != "Error") {
+                                            info_3 = result.split("|")[0]
+                                            db.update_account(result.split("|")[0])
+                                            db.insta_add_3(data_in, info_3)
+                                        } else {
+                                            info_3 = result.split("|")[0] + "|Error"
+                                        }
+                                        db.insta_add_3(data_in, info_3)
+                                    })
+                                })
+                            }
+                        })
+                    })
+                }
+                db.add_cache(data_in, amount.split("|")[0])
+                callback(amount)
+            })
+        })
+
+    })
+}
 
 async function automatic() {
     setInterval(() => {

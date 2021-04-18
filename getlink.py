@@ -27,6 +27,7 @@ options.add_argument('--log-level 3')
 driver = webdriver.Chrome(chrome_options=options)
 wait = WebDriverWait(driver, 10)
 x = 0
+account = username1
 try:
     driver.get("https://instagram.com")
     time.sleep(1)
@@ -44,6 +45,8 @@ try:
     href = video.get_attribute("src")
     url = href
 except Exception as e:
+    x=1
+    account = username1
     try:
         driver.quit()
         driver.get("https://instagram.com")
@@ -62,6 +65,7 @@ except Exception as e:
         url = href
     except:
         x = 2
+        account = username3
         try:
             driver.quit()
             driver.get("https://instagram.com")
@@ -80,5 +84,5 @@ except Exception as e:
             url = href
         except:
             x = 3
-print(str(url) + "|" + str(x))
+print(str(url) + "|" + str(x) + "|" + str(account))
 driver.quit()
