@@ -207,11 +207,20 @@ app.get("/api/add", (req, res) => {
                 getVideoDurationInSeconds(video_link).then((duration) => {
                     if (duration < 3599) {
                         console.log(duration)
-                        download(drive_id, result.data["title"], () => {
+                        // download(drive_id, result.data["title"], () => {
+                            
+                        // })
+
+                        id = "https://drive.google.com/uc?id=" + drive_id
+                        const process = exec('cd video_cache && gdown ' + id)
+                        process.on("exit", (code) => {
                             db.getAccRD(3, (acc1, acc2, acc3) => {
                                 account1 = acc1["username"] + ":" + acc1["password"]
                                 account2 = acc2["username"] + ":" + acc2["password"]
                                 account3 = acc3["username"] + ":" + acc3["password"]
+                                console.log(account1)
+                                console.log(account2)
+                                console.log(account3)
                                 var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
                                 process.stdout.on('data', output => {
                                     var result = output.toString().split("\r\n")
@@ -237,16 +246,16 @@ app.get("/api/add", (req, res) => {
                                         db.update_account(result[2].split("|")[0])
                                     }
                                     db.addVideo(drive_id, info_1, info_2, info_3, () => {
-                                        fs.unlink(video_dest, (err) => { console.log(err) })
+                                        // fs.unlink(video_dest, (err) => { console.log(err) })
                                         res.json({
-                                            account1: info1,
-                                            account2: info2,
-                                            account3: info3
+                                            account1: info_1,
+                                            account2: info_2,
+                                            account3: info_3
                                         })
                                     })
                                 })
                             })
-                        })
+                        })    
                     }
                 })
             })
@@ -326,9 +335,7 @@ async function download(url, callback) {
     id = "https://drive.google.com/uc?id=" + url
     const process = exec('cd video_cache && gdown ' + id)
     process.on("exit", (code) => {
-        callback()
     })
-
 }
 
 app.get("/api/json/getmp4", (req, res)=>{

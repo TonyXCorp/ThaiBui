@@ -70,6 +70,6 @@ class multithread(Thread):
             print(self.username + "|" + "Error")      
         driver[self.count].quit()
 accounts = list_account.split("|")
-for i in range(0, accounts.length-1):
+for i in range(0, len(accounts)):
     thread.append(multithread(accounts[i], i))
     thread[i].start()
