@@ -269,26 +269,26 @@ io.on("connection", (socket) => {
             io.emit("account_list", data)
         })
     })
-    // socket.on('complete_list', (data)=>{
-    //     db.video_search_by_status("Completed", result=>{
-    //         io.emit('complete-list', result)
-    //     })
-    // })
-    // socket.on('error_list', (data)=>{
-    //     db.video_search_by_status("Error", result=>{
-    //         io.emit('error_list', result)
-    //     })
-    // })
-    // socket.on('pending_list', (data)=>{
-    //     db.video_search_by_status("Pending", result=>{
-    //         io.emit('pending_list', result)
-    //     })
-    // })
-    // socket.on('errupload_list', (data)=>{
-    //     db.video_search_by_status("Error upload", result=>{
-    //         io.emit('errupload_list', result)
-    //     })
-    // })
+    socket.on('complete_list', (data)=>{
+        db.video_search_by_status("Completed", result=>{
+            io.emit('complete-list', result)
+        })
+    })
+    socket.on('error_list', (data)=>{
+        db.video_search_by_status("Error", result=>{
+            io.emit('error_list', result)
+        })
+    })
+    socket.on('pending_list', (data)=>{
+        db.video_search_by_status("Pending", result=>{
+            io.emit('pending_list', result)
+        })
+    })
+    socket.on('errupload_list', (data)=>{
+        db.video_search_by_status("Error upload", result=>{
+            io.emit('errupload_list', result)
+        })
+    })
     socket.on('getLink', (data_in) => {
         db.video_search_by_id(data_in, (data) => {
             db.account_search(data["insta_id"], (user, pass) => {

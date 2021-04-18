@@ -1,7 +1,20 @@
 <%- include('header')%>
 <div class="main" style="padding:0" id="listVideo">
     <div class="sub-header">List file Videos</div>
+    <div class="modal fade show" :style="'display: '+isShow+'; padding-right: 17px; margin-top:15%;'" aria-modal="true" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{link}}</font></font></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="isShow='none'"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Đóng</font></font></button>
+      </div>
+    </div>
+  </div>
+</div>
     <div class="display">
+
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" v-if ="tongtab>4">
             <div class="btn-group me-2" role="group" aria-label="First group">
               <button type="button" class="btn btn-primary" v-if="viTri<=3" disabled>First</button>
@@ -47,6 +60,7 @@
               </tr>
             </tbody>
           </table>
+          
     </div>
 </div>
 </body>

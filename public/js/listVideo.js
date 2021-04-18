@@ -2,6 +2,8 @@ var socket = io('http://localhost:1212')
 var app = new Vue({
 	el:'#listVideo',
 	data: {
+		isShow:'none',
+		link:'',
 		fileBase:[],
 		doDai:'', 
 		viTri:3,
@@ -37,5 +39,6 @@ socket.emit('video_list')
 		console.log(u)
 		return this.app.fileBase=u,this.app.doDai=u.length,this.app.tongtab=Math.floor(u.length/50)+1})
 socket.on("alert", data=>{
-	alert(data)
+	this.app.link=data
+	this.app.isShow='block'
 })
