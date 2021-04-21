@@ -206,10 +206,7 @@ app.get("/api/add", (req, res) => {
                 console.log(video_link)
                 getVideoDurationInSeconds(video_link).then((duration) => {
                     if (duration < 3599) {
-                        // download(drive_id, result.data["title"], () => {
-                            
-                        // })
-
+                
                         id = "https://drive.google.com/uc?id=" + drive_id
                         const process = exec('cd video_cache && gdown ' + id)
                         process.on("exit", (code) => {
