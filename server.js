@@ -206,7 +206,6 @@ app.get("/api/add", (req, res) => {
                 console.log(video_link)
                 getVideoDurationInSeconds(video_link).then((duration) => {
                     if (duration < 3599) {
-                        console.log(duration)
                         // download(drive_id, result.data["title"], () => {
                             
                         // })
@@ -218,6 +217,7 @@ app.get("/api/add", (req, res) => {
                                 account1 = acc1["username"] + ":" + acc1["password"]
                                 account2 = acc2["username"] + ":" + acc2["password"]
                                 account3 = acc3["username"] + ":" + acc3["password"]
+                                db.addVideo(id,acc1["username"],acc2["username"],acc3["username"],'Pending')
                                 console.log(account1)
                                 console.log(account2)
                                 console.log(account3)
@@ -245,7 +245,7 @@ app.get("/api/add", (req, res) => {
                                         info_3 = result[2]
                                         db.update_account(result[2].split("|")[0])
                                     }
-                                    db.addVideo(drive_id, info_1, info_2, info_3, () => {
+                                    db.updateVideo(drive_id, info_1, info_2, info_3,() => {
                                         // fs.unlink(video_dest, (err) => { console.log(err) })
                                         res.json({
                                             account1: info_1,
@@ -256,6 +256,8 @@ app.get("/api/add", (req, res) => {
                                 })
                             })
                         })    
+                    }else {
+                        res.json({status:'0'})
                     }
                 })
             })

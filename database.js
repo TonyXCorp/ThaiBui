@@ -132,13 +132,13 @@ function delAccount(id) {
 }
 
 
-function addVideo(drive_url, insta_info_1, insta_info_2, insta_info_3, callback) {
+function addVideo(drive_url, insta_info_1, insta_info_2, insta_info_3, status, callback) {
   videos.create({
     drive_url: drive_url,
-    insta_info_1,
-    insta_info_2,
-    insta_info_3,
-    status: "Completed"
+    insta_info_1:insta_info_1,
+    insta_info_2:insta_info_2,
+    insta_info_3:insta_info_3,
+    status: status
   }).then(row => {
     console.log(row)
     callback("Done")
@@ -152,10 +152,8 @@ function delVideo(id) {
   videos.destroy({ where: { id: id } })
 }
 
-function updateVideo(url, title, description, insta_info_1, insta_info_2, insta_info_3, callback) {
+function updateVideo(url, insta_info_1, insta_info_2, insta_info_3, callback) {
   videos.update({
-    title: title,
-    description: description,
     insta_info_1: insta_info_1,
     insta_info_2: insta_info_2,
     insta_info_3: insta_info_3,
