@@ -212,12 +212,12 @@ app.get("/api/add", (req, res) => {
 
                         id = "https://drive.google.com/uc?id=" + drive_id
                         const process = exec('cd video_cache && gdown ' + id)
+                        db.addVideo(id,'loading','loading','loading','Pending')
                         process.on("exit", (code) => {
                             db.getAccRD(3, (acc1, acc2, acc3) => {
                                 account1 = acc1["username"] + ":" + acc1["password"]
                                 account2 = acc2["username"] + ":" + acc2["password"]
                                 account3 = acc3["username"] + ":" + acc3["password"]
-                                db.addVideo(id,acc1["username"],acc2["username"],acc3["username"],'Pending')
                                 console.log(account1)
                                 console.log(account2)
                                 console.log(account3)
