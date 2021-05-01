@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 import sys
 from threading import Thread
+import time
 def getPath(file):
     path = os.path.abspath(file)
     return path
@@ -31,44 +32,32 @@ class multithread(Thread):
         wait.append(WebDriverWait(driver[self.count], 10))
     def run(self):
         try:
-            driver[self.count].get("https://instagram.com")
-            wait[self.count].until(EC.presence_of_element_located((By.XPATH, """//input[@name='username']"""))).send_keys(self.username) 
-            #an8amc1234
-            driver[self.count].find_element_by_name("password").send_keys(self.password)
-            #tonyparker2003
-            driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
-            try:
-                wait[self.count].until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
-            except Exception as e:
-                pass
-            driver[self.count].get("https://www.instagram.com/tv/upload")
-            upload_input = wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "YeWti")))
-            upload_input.send_keys(video_url)
-            while (1 != 2):
-                up_percent = wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "gCQgN")))
-                if (up_percent.text == "100%"): 
-                    break
-            driver[self.count].find_element_by_xpath("""//input[@placeholder='Title']""").send_keys("Title")
-            driver[self.count].find_element_by_xpath("""//textarea[@placeholder='Description']""").send_keys("Description")
-            driver[self.count].find_element_by_xpath("""/html/body/div[1]/section/main/div/form/div/div[2]/div[10]/button""").click()
-            while (1!=2):
-                if(driver[self.count].title != "Instagram"):
-                    break
+            driver[self.count].get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
+            wait[self.count].until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(self.username)
+            driver[self.count].find_element_by_id("id_password_3").send_keys(self.password)
+            driver[self.count].find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
             flag = True
-            while (flag):
-                try:
-                    driver[self.count].find_element_by_xpath("""//div[@class='fj4kY CABe1']""")
-                except Exception as e:
+            while(flag):
+                if(driver[self.count].title != "Kakao Account"):
                     flag = False
-            try:
-                first_video = driver[self.count].find_element_by_class_name("_bz0w")
-                insta_link = first_video.get_attribute("href")
-                print(self.username + "|" + insta_link)
-            except Exception as e:
-                print(self.username + "|" + "Error")
+            driver[self.count].get("https://tv.kakao.com/station/uploader")
+            wait[self.count].until(EC.presence_of_element_located((By.CLASS_NAME, "inp_attach"))).send_keys(video_url)
+            flag = True
+            while(flag):
+                status = driver[self.count].find_element_by_id("successCnt").text
+                if(status == "1"):
+                    flag = False
+            time.sleep(1)
+            driver[self.count].find_element_by_class_name("link_detailinfo").click()
+            wait[self.count].until(EC.presence_of_element_located((By.XPATH, """/html/body/div[2]/div[2]/div[1]/div/div[3]/div/div/div[2]/form/fieldset/div[1]/div[2]/div[2]"""))).click()
+            driver[self.count].find_element_by_xpath("""/html/body/div[2]/div[2]/div[1]/div/div[3]/div/div/div[2]/form/fieldset/div[1]/div[2]/div[2]/div[3]/ul/li[1]""").click()
+            driver[self.count].find_element_by_xpath("""/html/body/div[2]/div[2]/div[1]/div/div[3]/div/div/div[2]/form/fieldset/div[3]/div[11]/button[2]""").click()
+            link_url = driver[self.count].find_element_by_class_name("link_url").text
+            print(link_url)
+            time.sleep(5)
         except Exception as e:
-            print(self.username + "|" + "Error")      
-        driver[self.count].quit()
+            print(self.username + "|" + "Error")  
+        driver[self.count].quit()    
 accounts = list_account.split("|")
 for i in range(0, len(accounts)):
     thread.append(multithread(accounts[i], i))

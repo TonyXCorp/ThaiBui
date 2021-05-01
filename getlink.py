@@ -29,59 +29,55 @@ wait = WebDriverWait(driver, 10)
 x = 0
 account = username1
 try:
-    driver.get("https://instagram.com")
+    driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
+    wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
+    driver.find_element_by_id("id_password_3").send_keys(password)
+    driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
+    flag = True
+    while(flag):
+        if(driver.title != "Kakao Account"):
+            flag = False
+    driver.get("https://tv.kakao.com/katz/v1/ft/cliplink/"+ str(video_url) + "/readyNplay?player=monet_html5&referer=&pageReferer=&profile=MAIN")
     time.sleep(1)
-    wait.until(EC.presence_of_element_located((By.XPATH, """//input[@name='username']"""))).send_keys(username1) 
-    #an8amc1234
-    driver.find_element_by_name("password").send_keys(password1)
-    #tonyparker2003
-    driver.find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
-    try:
-        wait.until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
-    except Exception as e:
-        print(e)
-    driver.get(url_1)
-    video = wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
-    href = video.get_attribute("src")
-    url = href
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    data = json.loads(soup.get_text())
+    url = data["videoLocation"]["url"]
 except Exception as e:
     x=1
     account = username1
     try:
         driver.quit()
-        driver.get("https://instagram.com")
-        wait.until(EC.presence_of_element_located((By.XPATH, """//input[@name='username']"""))).send_keys(username2) 
-        #an8amc1234
-        driver.find_element_by_name("password").send_keys(password2)
-        #tonyparker2003
-        driver.find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
-        try:
-            wait.until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
-        except:
-            pass
-        driver.get(url_2)
-        video = wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
-        href = video.get_attribute("src")
-        url = href
+        driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
+        wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
+        driver.find_element_by_id("id_password_3").send_keys(password)
+        driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
+        flag = True
+        while(flag):
+            if(driver.title != "Kakao Account"):
+                flag = False
+        driver.get("https://tv.kakao.com/katz/v1/ft/cliplink/"+ str(video_url) + "/readyNplay?player=monet_html5&referer=&pageReferer=&profile=MAIN")
+        time.sleep(1)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        data = json.loads(soup.get_text())
+        url = data["videoLocation"]["url"]
     except:
         x = 2
         account = username3
         try:
             driver.quit()
-            driver.get("https://instagram.com")
-            wait.until(EC.presence_of_element_located((By.XPATH, """//input[@name='username']"""))).send_keys(username3) 
-            #an8amc1234
-            driver.find_element_by_name("password").send_keys(password3)
-            #tonyparker2003
-            driver.find_element_by_xpath("""/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button""").click()
-            try:
-                wait.until(EC.presence_of_element_located((By.XPATH, """/html/body/div[4]/div/div/div/div[3]/button[2]"""))).click()
-            except:
-                pass
-            driver.get(url_3)
-            video = wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
-            href = video.get_attribute("src")
-            url = href
+            driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
+            wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
+            driver.find_element_by_id("id_password_3").send_keys(password)
+            driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
+            flag = True
+            while(flag):
+                if(driver.title != "Kakao Account"):
+                    flag = False
+            driver.get("https://tv.kakao.com/katz/v1/ft/cliplink/"+ str(video_url) + "/readyNplay?player=monet_html5&referer=&pageReferer=&profile=MAIN")
+            time.sleep(1)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            data = json.loads(soup.get_text())
+            url = data["videoLocation"]["url"]
         except:
             x = 3
 print(str(url) + "|" + str(x) + "|" + str(account))
