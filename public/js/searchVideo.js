@@ -1,4 +1,4 @@
-var socket = io('http://localhost:1212')
+var socket = io('http://103.151.52.169:1212')
 var app = new Vue({
 	el:'#searchVideo',
 	data: {
