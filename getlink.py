@@ -6,11 +6,13 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 import sys
 import time
+from bs4 import BeautifulSoup
+import json
 
 def getPath(file):
     path = os.path.abspath(file)
     return path
-input_data = sys.argv
+video_url = sys.argv[0]
 username1 = sys.argv[1].split("|")[0]
 password1 = sys.argv[1].split("|")[1]
 url_1 = sys.argv[1].split("|")[2]
@@ -30,8 +32,8 @@ x = 0
 account = username1
 try:
     driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
-    wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
-    driver.find_element_by_id("id_password_3").send_keys(password)
+    wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username1)
+    driver.find_element_by_id("id_password_3").send_keys(password1)
     driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
     flag = True
     while(flag):
@@ -48,8 +50,8 @@ except Exception as e:
     try:
         driver.quit()
         driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
-        wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
-        driver.find_element_by_id("id_password_3").send_keys(password)
+        wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username2)
+        driver.find_element_by_id("id_password_3").send_keys(password2)
         driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
         flag = True
         while(flag):
@@ -66,8 +68,8 @@ except Exception as e:
         try:
             driver.quit()
             driver.get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
-            wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username)
-            driver.find_element_by_id("id_password_3").send_keys(password)
+            wait.until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(username3)
+            driver.find_element_by_id("id_password_3").send_keys(password3)
             driver.find_element_by_xpath("""//*[@id="login-form"]/fieldset/div[8]/button[1]""").click()
             flag = True
             while(flag):
