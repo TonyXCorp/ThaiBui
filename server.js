@@ -276,9 +276,8 @@ app.post("/addVideo", (req, res) => {
         console.log(drive_id)
         db.link_check(drive_id, (ifExist) => {
             if (!ifExist) {
-                res.json({
-                    status: '2'
-                })
+                console.log("2")
+                res.render("addlink", { error: 'File exist !' })
             } else {
                 console.log("Else")
                 axios({
@@ -342,25 +341,19 @@ app.post("/addVideo", (req, res) => {
                                         }
                                         db.updateVideo(drive_id, info_1, info_2, info_3, () => {
                                             // fs.unlink(video_dest, (err) => { console.log(err) })
-                                            res.json({
-                                                account1: info_1,
-                                                account2: info_2,
-                                                account3: info_3
-                                            })
+                                            res.render("addlink", { error: 'Done' })
                                         })
                                     })
                                 })
                             })
                         } else {
-                            res.json({ status: '0' })
+                            res.render("addlink", { error: 'Error !' })
                         }
                     })
                 })
             }
         })
     }
-    res.render("addlink", { error: '' })
-
 })
 
 
