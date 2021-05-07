@@ -555,6 +555,33 @@ async function getmp4(data_in, callback) {
     })
 }
 
+
+
+app.get('/test', (req, res)=>{
+    downloadImage().then(()=>{
+        console.log("Done")
+    })
+})
+
+async function downloadImage () {  
+    const url = 'http://video.fvca2-2.fna.fbcdns.net/videoplayback?hash=eyJjb29raWUiOlsiRFJJVkVfU1RSRUFNPWJGQ0FnWkdweEtFOyBEb21haW49LmRvY3MuZ29vZ2xlLmNvbTsgUGF0aD0vOyBTZWN1cmU7IEh0dHBPbmx5OyBTYW1lU2l0ZT1ub25lIiwiU0lEQ0M9QUppNFFmR0Y0VkNsREFaSjZlaEUwRktIOEktOVMxV3V6WkZyR0tSMWFlYUJJc1pZb0JlLVpHdmFwbGZvaXIwVHJpR2JvRVJ0QXRmODsgZXhwaXJlcz1GcmksIDA2LU1heS0yMDIyIDIzOjIzOjIwIEdNVDsgcGF0aD0vOyBkb21haW49Lmdvb2dsZS5jb207IHByaW9yaXR5PWhpZ2giLCJfX1NlY3VyZS0zUFNJRENDPUFKaTRRZkVzYnIzQ2FFOGNFRnMyNklVOWlWbjV4WTRxS2RhUXVLTFdQcEdCUVBXYVJROGxBYXRJX3RQcHE4QnFmM3lfS1BnNmxqWTsgZXhwaXJlcz1GcmksIDA2LU1heS0yMDIyIDIzOjIzOjIwIEdNVDsgcGF0aD0vOyBkb21haW49Lmdvb2dsZS5jb207IFNlY3VyZTsgSHR0cE9ubHk7IHByaW9yaXR5PWhpZ2g7IFNhbWVTaXRlPW5vbmUiXSwiZG9tYWluIjoiaHR0cHM6Ly9yMS0tLXNuLTRnNWVkbnNzLmMuZG9jcy5nb29nbGUuY29tL3ZpZGVvcGxheWJhY2s_ZXhwaXJlPTE2MjAzNTc4MDAmZWk9YUhxVVlLbWRGZV9vd3RRUG1ZYVlzQXMmaXA9OTQuMjQ5LjE2MC42JmNwPVFWUkhVa1JmVmxoT1FWaFBPamM1UjBGbGFuTnhZbFEyWVRWc09VWXdUSGgzVTNRMGMyRkRkMEZzZFVGMFVVOXFSVzlOWlRGWVZYZyZpZD1mZjA3YjE4ZDAyNDFlNDZhJml0YWc9MTgmc291cmNlPXdlYmRyaXZlJnJlcXVpcmVzc2w9eWVzJm1oPTc4Jm1tPTMyJm1uPXNuLTRnNWVkbnNzJm1zPXN1Jm12PXUmbXZpPTEmcGw9MjImdHRsPXRyYW5zaWVudCZzdXNjPWRyJmRyaXZlaWQ9MXhuTnd5WDZmbjM5TmdTNFpDRVVZWWZmQjJBR1lnaUtKJmFwcD1leHBsb3JlciZtaW1lPXZpZGVvL21wNCZ2cHJ2PTEmcHJ2PTEmZHVyPTQ1LjU1NyZsbXQ9MTYxNjE0MzA0NTIxNTk5OCZtdD0xNjIwMzQzMjY2JnNwYXJhbXM9ZXhwaXJlJTJDZWklMkNpcCUyQ2NwJTJDaWQlMkNpdGFnJTJDc291cmNlJTJDcmVxdWlyZXNzbCUyQ3R0bCUyQ3N1c2MlMkNkcml2ZWlkJTJDYXBwJTJDbWltZSUyQ3ZwcnYlMkNwcnYlMkNkdXIlMkNsbXQmc2lnPUFPcTBRSjh3UlFJaEFJRlg1ZEZSdkRnYmY2NmZSWExSdUhyaDh1T0ZYWjY1Z2d6TlB6VVpRVDZfQWlCY0FydW1URC1oanpXWFNNOUNNZTFManNJZTVDWXl2bDNSMlNodGYwYnVYUT09JmxzcGFyYW1zPW1oJTJDbW0lMkNtbiUyQ21zJTJDbXYlMkNtdmklMkNwbCZsc2lnPUFHM0NfeEF3UkFJZ0QxVEdiOGVyWUlmc3N2Zmh6eXNWRnB3SW5pZlRiMUVWZi12ZEMxR3E0bndDSUN6aC13VHozZ3ZreFNqVWxhbWNGNHhCdTM2Tk9jaXRtZjRSYkwtSHE2N3UiLCJmaWxlaWQiOiIxeG5Od3lYNmZuMzlOZ1M0WkNFVVlZZmZCMkFHWWdpS0oifQ'
+    const path = "./vidd.mp4"
+    const writer = fs.createWriteStream(path)
+  
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream'
+    })
+  
+    response.data.pipe(writer)
+  
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    })
+  }
+
 async function automatic() {
     setInterval(() => {
         console.log("1gio")
