@@ -34,6 +34,10 @@ const insta_acccount = sequelize.define('insta_account', {
   password: Sequelize.TEXT,
   count: Sequelize.INTEGER,
 })
+
+const cookie_storage = sequelize.define('cookie', { 
+  cookie: Sequelize.TEXT,
+})
 sequelize.sync()
 
 function xuatAccRD(amount, callback) {
@@ -284,6 +288,35 @@ function get_password(user1, user2, user3, callback){
     callback(acc1, acc2, acc3)
   })
 }
+async function get_cookies(cb){
+  await cookie_storage.findOne({
+    raw: true,
+    where: {}
+  }).then(result=>{
+    return cb(result["cookie"])
+  })
+}
+
+function replace_cookies(cookies){
+  cookie_storage.findAll({
+    where: {}
+  }).then(result=>{
+    if (result.length != 0){
+      cookie_storage.update({
+        where: { 
+          id: 1
+        }
+      }, {
+        cookie: cookies
+      })
+    }
+    else{
+      cookie_storage.create({
+        cookie: cookies
+      })
+    }
+  })
+}
 module.exports = {
   count: count,
   getVideos: getVideos,
@@ -309,4 +342,5 @@ module.exports = {
   changePASS:changePASS,
   getpass:getpass,
   getPassword:get_password,
+  get_cookies: get_cookies,
 }

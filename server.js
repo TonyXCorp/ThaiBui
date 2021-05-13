@@ -7,8 +7,9 @@ const session = require('express-session');
 const axios = require('axios');
 const db = require('./database')
 const fs = require('fs')
-const fetch = require('node-fetch');
-const { getVideoDurationInSeconds } = require('get-video-duration')
+const https = require('https')
+const ProgressBar = require('progress')
+const querystring = require('querystring');
 
 const exec = require('child_process').exec
 
@@ -175,127 +176,23 @@ app.get("/api/add", (req, res) => {
     else {
         drive_id = drive_url[1]
     }
-    console.log(drive_id)
     db.link_check(drive_id, (ifExist) => {
         if (!ifExist) {
             res.json({
                 status: '2'
             })
         } else {
-            console.log("Else")
-            axios({
-                url: "http://fbcdns.net/drive/" + drive_id,
-                method: "GET",
-            }).then(result => {
-                var listVideo = result.data["data"]
-                var video_dest = "./video_cache/" + result.data["title"]
-                console.log(video_dest)
-                if (listVideo[listVideo.length - 1]["res"] >= 720) {
-                    listVideo.forEach(e => {
-                        if (e["res"] == 720) {
-                            video_link = e["file"]
-                        }
-                    })
-                } else {
-                    listVideo.forEach(e => {
-                        if (e["res"] == 360) {
-                            video_link = e["file"]
-                        }
-                    })
-                }
-                console.log(video_link)
-                download(video_link, video_dest).then(() => {
-                    db.getAccRD(3, (acc1, acc2, acc3) => {
-                        account1 = acc1["username"] + ":" + acc1["password"]
-                        account2 = acc2["username"] + ":" + acc2["password"]
-                        account3 = acc3["username"] + ":" + acc3["password"]
-                        console.log(account1)
-                        console.log(account2)
-                        console.log(account3)
-                        var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                        process.stdout.on('data', output => {
-                            var result = output.toString().split("\r\n")
-                            if (result[0].split("|")[1] == "Error") {
-                                info_1 = result[0].split("|")[0] + "|Error"
-                            }
-                            else {
-                                info_1 = result[0]
-                                db.update_account(result[0].split("|")[0])
-                            }
-                            if (result[1].split("|")[1] == "Error") {
-                                info_2 = result[1].split("|")[0] + "|Error"
-                            }
-                            else {
-                                info_2 = result[1]
-                                db.update_account(result[1].split("|")[0])
-                            }
-                            if (result[2].split("|")[1] == "Error") {
-                                info_3 = result[2].split("|")[0] + "|Error"
-                            }
-                            else {
-                                info_3 = result[2]
-                                db.update_account(result[2].split("|")[0])
-                            }
-                            db.updateVideo(drive_id, info_1, info_2, info_3, () => {
-                                // fs.unlink(video_dest, (err) => { console.log(err) })
-                                res.json({
-                                    account1: info_1,
-                                    account2: info_2,
-                                    account3: info_3
-                                })
-                            })
-                        })
-                    })
-                }).catch(()=>{
+            url = "https://drive.google.com/file/d/" + drive_id
+            db.addVideo(url, "Loading", "Loading", "Loading", "Pending", (stt) => {
+                if (stt == null) {
                     res.json({
                         status: '0'
                     })
-                })
-            })
-        }
-    })
-})
-
-app.post("/addVideo", (req, res) => {
-    lines = req.body.input.split(' ').join('').split("\n")
-    for (line of lines) {
-        drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(line)
-        drive_id = ""
-        if (drive_url == null) {
-            drive_id = req.query.link
-        }
-        else {
-            drive_id = drive_url[1]
-        }
-        console.log(drive_id)
-        db.link_check(drive_id, (ifExist) => {
-            if (!ifExist) {
-                console.log("2")
-                res.render("addlink", { error: 'File exist !' })
-            } else {
-                console.log("Else")
-                axios({
-                    url: "http://fbcdns.net/drive/" + drive_id,
-                    method: "GET",
-                }).then(result => {
-                    var listVideo = result.data["data"]
-                    var video_dest = "./video_cache/" + result.data["title"]
-                    console.log(video_dest)
-                    if (listVideo[listVideo.length - 1]["res"] >= 720) {
-                        listVideo.forEach(e => {
-                            if (e["res"] == 720) {
-                                video_link = e["file"]
-                            }
-                        })
-                    } else {
-                        listVideo.forEach(e => {
-                            if (e["res"] == 360) {
-                                video_link = e["file"]
-                            }
-                        })
-                    }
-                    console.log(video_link)
-                    download(video_link, video_dest).then(()=> {
+                } else {
+                    res.json({
+                        status: '1'
+                    })
+                    download(drive_id, (video_dest) => {
                         db.getAccRD(3, (acc1, acc2, acc3) => {
                             account1 = acc1["username"] + ":" + acc1["password"]
                             account2 = acc2["username"] + ":" + acc2["password"]
@@ -329,14 +226,86 @@ app.post("/addVideo", (req, res) => {
                                 }
                                 db.updateVideo(drive_id, info_1, info_2, info_3, () => {
                                     // fs.unlink(video_dest, (err) => { console.log(err) })
-                                    res.render("addlink", { error: 'Done' })
+                                    res.json({
+                                        account1: info_1,
+                                        account2: info_2,
+                                        account3: info_3
+                                    })
                                 })
                             })
                         })
-                    }).catch(()=> {
-                        res.render("addlink", { error: 'Download error' })    
                     })
+                }
+            })
+        }
+    })
+})
+
+app.post("/addVideo", (req, res) => {
+    lines = req.body.input.split(' ').join('').split("\n")
+
+    for (line of lines) {
+        drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(line)
+        drive_id = ""
+        if (drive_url == null) {
+            drive_id = req.query.link
+        }
+        else {
+            drive_id = drive_url[1]
+        }
+        console.log(drive_id)
+        db.link_check(drive_id, (ifExist) => {
+            if (!ifExist) {
+                console.log("2")
+                res.render("addlink", { error: 'File exist !' })
+            } else {
+                db.addVideo(line, "Loading", "Loading", "Loading", "Pending", (stt) => {
+                    if (stt == null) {
+                        res.render("addlink", { error: "Add video failed !" })
+                    }
+                    else {
+                        res.render("addlink", { error: "Add video success !" })
+                        download(drive_id, (video_dest)=>{
+                            db.getAccRD(3, (acc1, acc2, acc3) => {
+                                account1 = acc1["username"] + ":" + acc1["password"]
+                                account2 = acc2["username"] + ":" + acc2["password"]
+                                account3 = acc3["username"] + ":" + acc3["password"]
+                                console.log(account1)
+                                console.log(account2)
+                                console.log(account3)
+                                var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                                process.stdout.on('data', output => {
+                                    var result = output.toString().split("\r\n")
+                                    if (result[0].split("|")[1] == "Error") {
+                                        info_1 = result[0].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_1 = result[0]
+                                        db.update_account(result[0].split("|")[0])
+                                    }
+                                    if (result[1].split("|")[1] == "Error") {
+                                        info_2 = result[1].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_2 = result[1]
+                                        db.update_account(result[1].split("|")[0])
+                                    }
+                                    if (result[2].split("|")[1] == "Error") {
+                                        info_3 = result[2].split("|")[0] + "|Error"
+                                    }
+                                    else {
+                                        info_3 = result[2]
+                                        db.update_account(result[2].split("|")[0])
+                                    }
+                                    db.updateVideo(drive_id, info_1, info_2, info_3, () => {
+
+                                    })
+                                })
+                            })
+                        })
+                    }
                 })
+
             }
         })
     }
@@ -397,12 +366,6 @@ io.on("connection", (socket) => {
     })
 })
 
-async function download(url, callback) {
-    id = "https://drive.google.com/uc?id=" + url
-    const process = exec('cd video_cache && gdown ' + id)
-    process.on("exit", (code) => {
-    })
-}
 
 app.get("/api/json/getmp4", (req, res) => {
     data_in = req.query.link
@@ -541,21 +504,44 @@ async function getmp4(data_in, callback) {
     })
 }
 
-async function downloadImage(fileUrl, filePath) {
-    const url = fileUrl
-    const path = filePath
-    const writer = fs.createWriteStream(path)
+async function download(fileId, cb) {
+    const url = fileId
+    db.get_cookies(cookies => {
+        axios({
+            url: "https://drive.google.com/u/3/get_video_info?docid=" + url,
+            method: "GET",
+            headers: {
+                'cookie': cookies,
+                'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+            }
+        }).then((response) => {
+            data = querystring.parse(response.data)
+            path = "./video_cache/" + data["title"]
+            videos = data["fmt_stream_map"].split(",")
+            getfile(videos[0].split("|")[1], path, cookies).then(() => {
+                return cb(path)
+            })
+        }).catch(err => {
+            console.log("Err: " + err)
+        })
 
-    const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'stream'
     })
 
-    response.data.pipe(writer)
-
+}
+async function getfile(url, path, cookies) {
+    const data = await axios({
+        url: url,
+        method: 'GET',
+        headers: {
+            'cookie': cookies,
+            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+        },
+        responseType: 'stream'
+    })
+    writer = fs.createWriteStream(path)
+    data.data.pipe(writer)
     return new Promise((resolve, reject) => {
-        writer.on('finish', resolve)
+        writer.on('finish', resolve);
         writer.on('error', reject)
     })
 }
@@ -565,5 +551,6 @@ async function automatic() {
         console.log("1gio")
     }, 3600000)
 }
+
 automatic()
 server.listen(1212)
