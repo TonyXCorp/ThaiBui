@@ -8,7 +8,6 @@ const axios = require('axios');
 const db = require('./database')
 const fs = require('fs')
 const https = require('https')
-const ProgressBar = require('progress')
 const querystring = require('querystring');
 
 const exec = require('child_process').exec
