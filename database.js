@@ -156,12 +156,12 @@ function delVideo(id) {
   videos.destroy({ where: { id: id } })
 }
 
-function updateVideo(url, insta_info_1, insta_info_2, insta_info_3, callback) {
+function updateVideo(url, insta_info_1, insta_info_2, insta_info_3, status, callback) {
   videos.update({
     insta_info_1: insta_info_1,
     insta_info_2: insta_info_2,
     insta_info_3: insta_info_3,
-    status: "Completed"
+    status: status
   }, {
     where: { drive_url: url },
   }).then(() => {
@@ -210,7 +210,6 @@ function video_search_by_url(url, callback) {
     callback(row)
   })
 }
-
 function add_cache(url, link) {
   videos.update({
     cache: link
@@ -218,7 +217,6 @@ function add_cache(url, link) {
     where: { drive_url: url }
   })
 }
-
 function video_search_by_status(status, callback) {
   videos.findAll({
     where: { status: status },
@@ -227,11 +225,6 @@ function video_search_by_status(status, callback) {
     callback(row)
   })
 }
-// Administrator.create({
-//   password: '1'
-// })
-Administrator.findAll({}).then(row=>console.log(row))
-
 function insta_add_1(video_url, info) {
   videos.update({
     insta_info_1: info

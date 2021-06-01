@@ -191,49 +191,49 @@ app.get("/api/add", (req, res) => {
                     res.json({
                         status: '1'
                     })
-                    download(drive_id, (video_dest) => {
-                        db.getAccRD(3, (acc1, acc2, acc3) => {
-                            account1 = acc1["username"] + ":" + acc1["password"]
-                            account2 = acc2["username"] + ":" + acc2["password"]
-                            account3 = acc3["username"] + ":" + acc3["password"]
-                            console.log(account1)
-                            console.log(account2)
-                            console.log(account3)
-                            var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                            process.stdout.on('data', output => {
-                                var result = output.toString().split("\r\n")
-                                if (result[0].split("|")[1] == "Error") {
-                                    info_1 = result[0].split("|")[0] + "|Error"
-                                }
-                                else {
-                                    info_1 = result[0]
-                                    db.update_account(result[0].split("|")[0])
-                                }
-                                if (result[1].split("|")[1] == "Error") {
-                                    info_2 = result[1].split("|")[0] + "|Error"
-                                }
-                                else {
-                                    info_2 = result[1]
-                                    db.update_account(result[1].split("|")[0])
-                                }
-                                if (result[2].split("|")[1] == "Error") {
-                                    info_3 = result[2].split("|")[0] + "|Error"
-                                }
-                                else {
-                                    info_3 = result[2]
-                                    db.update_account(result[2].split("|")[0])
-                                }
-                                db.updateVideo(drive_id, info_1, info_2, info_3, () => {
-                                    // fs.unlink(video_dest, (err) => { console.log(err) })
-                                    res.json({
-                                        account1: info_1,
-                                        account2: info_2,
-                                        account3: info_3
-                                    })
-                                })
-                            })
-                        })
-                    })
+                    // download(drive_id, (video_dest) => {
+                    //     db.getAccRD(3, (acc1, acc2, acc3) => {
+                    //         account1 = acc1["username"] + ":" + acc1["password"]
+                    //         account2 = acc2["username"] + ":" + acc2["password"]
+                    //         account3 = acc3["username"] + ":" + acc3["password"]
+                    //         console.log(account1)
+                    //         console.log(account2)
+                    //         console.log(account3)
+                    //         var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                    //         process.stdout.on('data', output => {
+                    //             var result = output.toString().split("\r\n")
+                    //             if (result[0].split("|")[1] == "Error") {
+                    //                 info_1 = result[0].split("|")[0] + "|Error"
+                    //             }
+                    //             else {
+                    //                 info_1 = result[0]
+                    //                 db.update_account(result[0].split("|")[0])
+                    //             }
+                    //             if (result[1].split("|")[1] == "Error") {
+                    //                 info_2 = result[1].split("|")[0] + "|Error"
+                    //             }
+                    //             else {
+                    //                 info_2 = result[1]
+                    //                 db.update_account(result[1].split("|")[0])
+                    //             }
+                    //             if (result[2].split("|")[1] == "Error") {
+                    //                 info_3 = result[2].split("|")[0] + "|Error"
+                    //             }
+                    //             else {
+                    //                 info_3 = result[2]
+                    //                 db.update_account(result[2].split("|")[0])
+                    //             }
+                    //             db.updateVideo(drive_id, info_1, info_2, info_3, () => {
+                    //                 // fs.unlink(video_dest, (err) => { console.log(err) })
+                    //                 res.json({
+                    //                     account1: info_1,
+                    //                     account2: info_2,
+                    //                     account3: info_3
+                    //                 })
+                    //             })
+                    //         })
+                    //     })
+                    // })
                 }
             })
         }
@@ -264,44 +264,44 @@ app.post("/addVideo", (req, res) => {
                     }
                     else {
                         res.render("addlink", { error: "Add video success !" })
-                        download(drive_id, (video_dest)=>{
-                            db.getAccRD(3, (acc1, acc2, acc3) => {
-                                account1 = acc1["username"] + ":" + acc1["password"]
-                                account2 = acc2["username"] + ":" + acc2["password"]
-                                account3 = acc3["username"] + ":" + acc3["password"]
-                                console.log(account1)
-                                console.log(account2)
-                                console.log(account3)
-                                var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                                process.stdout.on('data', output => {
-                                    var result = output.toString().split("\r\n")
-                                    if (result[0].split("|")[1] == "Error") {
-                                        info_1 = result[0].split("|")[0] + "|Error"
-                                    }
-                                    else {
-                                        info_1 = result[0]
-                                        db.update_account(result[0].split("|")[0])
-                                    }
-                                    if (result[1].split("|")[1] == "Error") {
-                                        info_2 = result[1].split("|")[0] + "|Error"
-                                    }
-                                    else {
-                                        info_2 = result[1]
-                                        db.update_account(result[1].split("|")[0])
-                                    }
-                                    if (result[2].split("|")[1] == "Error") {
-                                        info_3 = result[2].split("|")[0] + "|Error"
-                                    }
-                                    else {
-                                        info_3 = result[2]
-                                        db.update_account(result[2].split("|")[0])
-                                    }
-                                    db.updateVideo(drive_id, info_1, info_2, info_3, () => {
+                        // download(drive_id, (video_dest)=>{
+                        //     db.getAccRD(3, (acc1, acc2, acc3) => {
+                        //         account1 = acc1["username"] + ":" + acc1["password"]
+                        //         account2 = acc2["username"] + ":" + acc2["password"]
+                        //         account3 = acc3["username"] + ":" + acc3["password"]
+                        //         console.log(account1)
+                        //         console.log(account2)
+                        //         console.log(account3)
+                        //         var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
+                        //         process.stdout.on('data', output => {
+                        //             var result = output.toString().split("\r\n")
+                        //             if (result[0].split("|")[1] == "Error") {
+                        //                 info_1 = result[0].split("|")[0] + "|Error"
+                        //             }
+                        //             else {
+                        //                 info_1 = result[0]
+                        //                 db.update_account(result[0].split("|")[0])
+                        //             }
+                        //             if (result[1].split("|")[1] == "Error") {
+                        //                 info_2 = result[1].split("|")[0] + "|Error"
+                        //             }
+                        //             else {
+                        //                 info_2 = result[1]
+                        //                 db.update_account(result[1].split("|")[0])
+                        //             }
+                        //             if (result[2].split("|")[1] == "Error") {
+                        //                 info_3 = result[2].split("|")[0] + "|Error"
+                        //             }
+                        //             else {
+                        //                 info_3 = result[2]
+                        //                 db.update_account(result[2].split("|")[0])
+                        //             }
+                        //             db.updateVideo(drive_id, info_1, info_2, info_3, () => {
 
-                                    })
-                                })
-                            })
-                        })
+                        //             })
+                        //         })
+                        //     })
+                        // })
                     }
                 })
 
@@ -378,6 +378,17 @@ app.get("/api/json/getmp4", (req, res) => {
     })
 })
 
+app.post("/updateVideo", function(req, res){
+    video = req.body.info;
+    db.updateVideo(video.url, video.info_1, video.info_2, video.info_3, video.status, (result)=>{
+        if (result == Done){
+            res.json({status: 1})
+        }
+        else{
+            res.json({status: 0})
+        }
+    })
+})
 
 async function getmp4(data_in, callback) {
     db.video_search_by_url(data_in, (data) => {
@@ -550,6 +561,7 @@ async function automatic() {
         console.log("1gio")
     }, 3600000)
 }
+
 
 automatic()
 server.listen(1212)
