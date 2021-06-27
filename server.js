@@ -167,15 +167,7 @@ app.get("/loginFail", (req, res) => {
 })
 
 app.get("/api/add", (req, res) => {
-    drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(req.query.link)
-    drive_id = ""
-    if (drive_url == null) {
-        drive_id = req.query.link
-    }
-    else {
-        drive_id = drive_url[1]
-    }
-    db.link_check(drive_id, (ifExist) => {
+    db.link_check(req.query.link, (ifExist) => {
         if (!ifExist) {
             res.json({
                 status: '2'
@@ -190,70 +182,17 @@ app.get("/api/add", (req, res) => {
                 } else {
                     res.json({
                         status: '1'
-                    })
-                    // download(drive_id, (video_dest) => {
-                    //     db.getAccRD(3, (acc1, acc2, acc3) => {
-                    //         account1 = acc1["username"] + ":" + acc1["password"]
-                    //         account2 = acc2["username"] + ":" + acc2["password"]
-                    //         account3 = acc3["username"] + ":" + acc3["password"]
-                    //         console.log(account1)
-                    //         console.log(account2)
-                    //         console.log(account3)
-                    //         var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                    //         process.stdout.on('data', output => {
-                    //             var result = output.toString().split("\r\n")
-                    //             if (result[0].split("|")[1] == "Error") {
-                    //                 info_1 = result[0].split("|")[0] + "|Error"
-                    //             }
-                    //             else {
-                    //                 info_1 = result[0]
-                    //                 db.update_account(result[0].split("|")[0])
-                    //             }
-                    //             if (result[1].split("|")[1] == "Error") {
-                    //                 info_2 = result[1].split("|")[0] + "|Error"
-                    //             }
-                    //             else {
-                    //                 info_2 = result[1]
-                    //                 db.update_account(result[1].split("|")[0])
-                    //             }
-                    //             if (result[2].split("|")[1] == "Error") {
-                    //                 info_3 = result[2].split("|")[0] + "|Error"
-                    //             }
-                    //             else {
-                    //                 info_3 = result[2]
-                    //                 db.update_account(result[2].split("|")[0])
-                    //             }
-                    //             db.updateVideo(drive_id, info_1, info_2, info_3, () => {
-                    //                 // fs.unlink(video_dest, (err) => { console.log(err) })
-                    //                 res.json({
-                    //                     account1: info_1,
-                    //                     account2: info_2,
-                    //                     account3: info_3
-                    //                 })
-                    //             })
-                    //         })
-                    //     })
-                    // })
-                }
+                    })                }
             })
         }
     })
 })
-
 app.post("/addVideo", (req, res) => {
     lines = req.body.input.split(' ').join('').split("\n")
 
     for (line of lines) {
-        drive_url = /https:\/\/drive.google.com\/file\/d\/(.+)\//.exec(line)
-        drive_id = ""
-        if (drive_url == null) {
-            drive_id = req.query.link
-        }
-        else {
-            drive_id = drive_url[1]
-        }
-        console.log(drive_id)
-        db.link_check(drive_id, (ifExist) => {
+        
+        db.link_check(line, (ifExist) => {
             if (!ifExist) {
                 console.log("2")
                 res.render("addlink", { error: 'File exist !' })
@@ -264,44 +203,6 @@ app.post("/addVideo", (req, res) => {
                     }
                     else {
                         res.render("addlink", { error: "Add video success !" })
-                        // download(drive_id, (video_dest)=>{
-                        //     db.getAccRD(3, (acc1, acc2, acc3) => {
-                        //         account1 = acc1["username"] + ":" + acc1["password"]
-                        //         account2 = acc2["username"] + ":" + acc2["password"]
-                        //         account3 = acc3["username"] + ":" + acc3["password"]
-                        //         console.log(account1)
-                        //         console.log(account2)
-                        //         console.log(account3)
-                        //         var process = child('python', ["./upload.py", video_dest, account1, account2, account3])
-                        //         process.stdout.on('data', output => {
-                        //             var result = output.toString().split("\r\n")
-                        //             if (result[0].split("|")[1] == "Error") {
-                        //                 info_1 = result[0].split("|")[0] + "|Error"
-                        //             }
-                        //             else {
-                        //                 info_1 = result[0]
-                        //                 db.update_account(result[0].split("|")[0])
-                        //             }
-                        //             if (result[1].split("|")[1] == "Error") {
-                        //                 info_2 = result[1].split("|")[0] + "|Error"
-                        //             }
-                        //             else {
-                        //                 info_2 = result[1]
-                        //                 db.update_account(result[1].split("|")[0])
-                        //             }
-                        //             if (result[2].split("|")[1] == "Error") {
-                        //                 info_3 = result[2].split("|")[0] + "|Error"
-                        //             }
-                        //             else {
-                        //                 info_3 = result[2]
-                        //                 db.update_account(result[2].split("|")[0])
-                        //             }
-                        //             db.updateVideo(drive_id, info_1, info_2, info_3, () => {
-
-                        //             })
-                        //         })
-                        //     })
-                        // })
                     }
                 })
 
@@ -309,8 +210,6 @@ app.post("/addVideo", (req, res) => {
         })
     }
 })
-
-
 io.on("connection", (socket) => {
     console.log('co nguoi connected')
     socket.on('video_list', (data) => {
@@ -364,8 +263,15 @@ io.on("connection", (socket) => {
         })
     })
 })
-
-
+app.post("/updateVideo", (req, res)=>{
+    url = req.body.url;
+    account = req.body.account;
+    db.link_check(url, (isExist)=>{
+        if(!ifExist){
+            db.updateVideo(url, account[1], acocunt[2], account[3])
+        }
+    })
+})
 app.get("/api/json/getmp4", (req, res) => {
     data_in = req.query.link
     getmp4(data_in, amount => {
@@ -514,47 +420,6 @@ async function getmp4(data_in, callback) {
     })
 }
 
-async function download(fileId, cb) {
-    const url = fileId
-    db.get_cookies(cookies => {
-        axios({
-            url: "https://drive.google.com/u/3/get_video_info?docid=" + url,
-            method: "GET",
-            headers: {
-                'cookie': cookies,
-                'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
-            }
-        }).then((response) => {
-            data = querystring.parse(response.data)
-            path = "./video_cache/" + data["title"]
-            videos = data["fmt_stream_map"].split(",")
-            getfile(videos[0].split("|")[1], path, cookies).then(() => {
-                return cb(path)
-            })
-        }).catch(err => {
-            console.log("Err: " + err)
-        })
-
-    })
-
-}
-async function getfile(url, path, cookies) {
-    const data = await axios({
-        url: url,
-        method: 'GET',
-        headers: {
-            'cookie': cookies,
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
-        },
-        responseType: 'stream'
-    })
-    writer = fs.createWriteStream(path)
-    data.data.pipe(writer)
-    return new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject)
-    })
-}
 
 async function automatic() {
     setInterval(() => {

